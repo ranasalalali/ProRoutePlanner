@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import { Platform, StatusBar, Text } from 'react-native';
-import { Container, Content,Card, CardItem, Input, Button, Spinner,Item } from 'native-base';
+import { Platform, StatusBar, DeviceEventEmitter } from 'react-native';
+import { Container, Text, Content,Card, CardItem, Input, Body, Button, Spinner,Item,Header } from 'native-base';
 import { emailChanged, passwordChanged, loginUser } from '../actions';
 import { connect } from 'react-redux';
 import {Actions} from 'react-native-router-flux';
@@ -36,7 +36,12 @@ class LoginForm extends Component {
 
   render(){
       return(
-        <Container style={{paddingTop: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}}>
+        <Container style={{justifyContent:'center'}}>
+          <Header>
+          <Body>
+            <Text style={{color:'white',alignSelf:'center',fontSize:25}}>ProRoutePlanner</Text>
+          </Body>
+          </Header>
         <Content>
         <Card>
           <CardItem>

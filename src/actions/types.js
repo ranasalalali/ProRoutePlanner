@@ -11,3 +11,10 @@ export const TOGGLE_SEARCH_RESULT='toggle_search_result';
 
 
 export const GET_ADDRESS_PREDICTIONS='get_address_predictions';
+
+
+export const GET_SELECTED_ADDRESS='get_selected_address';
+export const GET_DIRECTION_POLYLINE='get_direction_polyline';
+export const GET_CHANGED_REGION='get_changed_region';
+
+export const GET_MUSLIM_COORDS='get_muslim_coords';

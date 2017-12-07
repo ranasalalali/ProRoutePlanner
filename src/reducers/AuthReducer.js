@@ -10,7 +10,11 @@ import {
   GET_CURRENT_LOCATION,
   GET_INPUT,
   TOGGLE_SEARCH_RESULT,
-  GET_ADDRESS_PREDICTIONS
+  GET_ADDRESS_PREDICTIONS,
+  GET_SELECTED_ADDRESS,
+  GET_DIRECTION_POLYLINE,
+  GET_CHANGED_REGION,
+  GET_MUSLIM_COORDS
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -22,7 +26,11 @@ const INITIAL_STATE = {
   region:{},
   inputData:{},
   resultTypes:{},
-  predictions:[]
+  predictions:[],
+  selectedSourceAddress:{},
+  selectedDestinationAddress:{},
+  coords:[],
+  muslimCoords:[],
 };
 
 const {width, height} = Dimensions.get("window");
@@ -35,16 +43,22 @@ const LONGITUDE_DELTA = ASPECT_RATIO * LATITUDE_DELTA;
 export default (state = INITIAL_STATE, action) => {
   console.log(action);
   switch(action.type){
+
     case EMAIL_CHANGED:
       return { ...state, email: action.payload };
+
     case PASSWORD_CHANGED:
       return { ...state, password: action.payload};
+
     case LOGIN_USER:
       return { ...state, loading: true, error:''};
+
     case LOGIN_USER_SUCCESS:
       return {...state, ...INITIAL_STATE, user: action.payload };
+
     case LOGIN_USER_FAIL:
       return { ...state, error: 'Authentication Failed.', password: '', loading: false };
+
     case GET_CURRENT_LOCATION:
       return { ...state, region:{
           latitude:Number(action.payload.coords.latitude),
@@ -53,17 +67,20 @@ export default (state = INITIAL_STATE, action) => {
           longitudeDelta:LONGITUDE_DELTA
         }
       };
+
     case GET_INPUT:
       const {key, value } = action.payload;
       return { ...state, inputData:{
         [key]:value
       }};
+
     case TOGGLE_SEARCH_RESULT:
       if(action.payload === 'Source'){
           return { ...state, resultTypes:{Source:true,
             Destination:false
           },
           predictions:[]
+
         };
       }
       if(action.payload === 'Destination'){
@@ -73,8 +90,44 @@ export default (state = INITIAL_STATE, action) => {
           predictions:[]
         };
       }
+
     case GET_ADDRESS_PREDICTIONS:
       return { ...state, predictions:action.payload};
+
+
+    case GET_SELECTED_ADDRESS:
+      if(state.resultTypes.Source){
+        return { ...state, selectedSourceAddress:{
+          selectedSource:action.payload
+        },
+        resultTypes:{Source:false,
+          Destination:false
+        }
+      }
+
+      }
+      else{
+        return { ...state, selectedDestinationAddress:{
+          selectedDestination:action.payload
+        },
+        resultTypes:{Source:false,
+          Destination:false
+        }
+      }
+      }
+      case GET_DIRECTION_POLYLINE:
+        return { ...state, coords:action.payload};
+      case GET_CHANGED_REGION:
+        return { ...state, region:{
+            latitude:Number(action.payload.lat),
+            longitude:Number(action.payload.long),
+            latitudeDelta:LATITUDE_DELTA,
+            longitudeDelta:LONGITUDE_DELTA
+          }
+        };
+      case GET_MUSLIM_COORDS:
+        return { ...state, muslimCoords:action.payload};
+
     default:
       return state;
   }
