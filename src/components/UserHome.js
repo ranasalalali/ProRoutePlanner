@@ -18,8 +18,6 @@ class UserHome extends Component {
      this.props.getCurrentLocation();
   }
 
-
-
   render() {
     const tabs = [{
       title:"TaxiCar",

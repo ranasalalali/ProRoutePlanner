@@ -1,11 +1,15 @@
 import React, {Component} from 'react';
 import { Platform, StatusBar, DeviceEventEmitter } from 'react-native';
 import { Container, Text, Content,Card, CardItem, Input, Body, Button, Spinner,Item,Header } from 'native-base';
-import { emailChanged, passwordChanged, loginUser } from '../actions';
+import { emailChanged, passwordChanged, loginUser, getBusList } from '../actions';
 import { connect } from 'react-redux';
 import {Actions} from 'react-native-router-flux';
 
 class LoginForm extends Component {
+
+  componentWillMount(){
+    this.props.getBusList();
+  }
 
   onEmailChange(text){
     this.props.emailChanged(text);
@@ -17,8 +21,14 @@ class LoginForm extends Component {
 
   onButtonPress(){
     const { email, password } = this.props;
+    if(this.props.email==="admin" && this.props.password==="admin"){
+      this.props.getBusList();
+      Actions.adminmain();
+    }
+    else{
+      this.props.loginUser ({email,password});
+    }
 
-    this.props.loginUser ({email,password});
   }
 
 
@@ -99,5 +109,5 @@ const mapStateToProps = ({auth}) => {
 
 
 export default connect(mapStateToProps, {
-  emailChanged, passwordChanged, loginUser
+  emailChanged, passwordChanged, loginUser,getBusList
 })(LoginForm);

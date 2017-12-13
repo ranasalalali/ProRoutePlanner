@@ -8,11 +8,10 @@ import RNPolyline  from 'rn-maps-polyline'
 import { StyleSheet } from 'react-native';
 import SideBar from './SideBar';
 import { connect } from 'react-redux';
-import { GetMuslimCoords, GetD1Coords, GetGreenBusCoords
+import { GetBusRoute, getBusList
 } from '../actions';
 
 class BusRoutes extends Component {
-
 
   constructor(props) {
     super(props);
@@ -24,19 +23,20 @@ class BusRoutes extends Component {
     this.setState({
       selected2: value
     });
-    if(value==="Muslim")
-    {
-      this.props.GetMuslimCoords();
-    }
-    if(value==="D-1")
-    {
-      this.props.GetD1Coords();
-    }
-    if(value==="Green Bus")
-    {
-      this.props.GetGreenBusCoords();
-    }
+
+    this.props.GetBusRoute(value);
   }
+  updateDropdown(){
+      var items = this.props.buslist;
+      console.log(items);
+      const all_items = items.map((category, i) => {
+        console.log(category)
+        return (
+            <Picker.Item key={category} label={category} value={category} />
+          )
+       });
+       return all_items;
+     }
 
   render() {
 
@@ -72,9 +72,7 @@ class BusRoutes extends Component {
               selectedValue={this.state.selected2}
               onValueChange={this.onValueChange2.bind(this)}
             >
-              <Item label="Green Bus" value="Green Bus" />
-              <Item label="Muslim" value="Muslim" />
-              <Item label="D-1" value="D-1" />
+              {this.updateDropdown()}
             </Picker>
           </Form>
       <View style={styles.container}>
@@ -91,6 +89,8 @@ class BusRoutes extends Component {
           }}
         >
         <MapView.Polyline
+            lineCap="round"
+            lineJoin="round"
             coordinates={this.props.muslimCoords}
             strokeColor="blue"
             strokeWidth={3}/>
@@ -115,11 +115,11 @@ const styles = {
 
 
 const mapStateToProps = ({auth}) => {
-  const {muslimCoords} = auth;
-  return{muslimCoords};
+  const {muslimCoords,buslist} = auth;
+  return{muslimCoords,buslist};
 };
 
 
 export default connect(mapStateToProps, {
-  GetMuslimCoords,GetD1Coords,GetGreenBusCoords
+  GetBusRoute,getBusList
 })(BusRoutes);

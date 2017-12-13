@@ -17,7 +17,8 @@ import {
   GET_SELECTED_ADDRESS,
   GET_DIRECTION_POLYLINE,
   GET_CHANGED_REGION,
-  GET_MUSLIM_COORDS
+  GET_MUSLIM_COORDS,
+  ADD_BUS_NAME
 } from './types';
 
 
@@ -161,94 +162,215 @@ export const getSelectedAddress = (payload,current)=>{
 };
 
 
-export const GetMuslimCoords=()=>{
+export const GetBusRoute=(busname)=>{
   return(dispatch, store)=>{
-        console.log("Hey")
-        request.get("https://maps.googleapis.com/maps/api/directions/json")
-        .query({
-          origin:"Gulshan e Hadeed Phase 2",
-          destination:"Keamari",
-          mode:"driving",
-          key:"AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
-        })
-        .finish((error, res)=>{
-          console.log(res);
-          let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
-          let coords = points.map((point,index) => {
-              return {
-                 latitude: point[1],
-                 longitude: point[0],
-              }
-          });
-          dispatch({
-            type:GET_MUSLIM_COORDS,
-            payload:points
-          });
-
-
-        })
+    firebase.database().ref('/buses/'+busname).once("value")
+    .then(function(snapshot){
+      console.log(snapshot.val());
+      var startpoint = snapshot.child("Startpoint").val();
+      var endpoint = snapshot.child("Endpoint").val();
+      var waypoint = snapshot.child("Waypoint").val();
+      request.get("https://maps.googleapis.com/maps/api/directions/json")
+      .query({
+        origin:startpoint,
+        destination:endpoint,
+        waypoints:waypoint,
+        mode:"driving",
+        key:"AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
+      })
+      .finish((error, res)=>{
+        console.log(res);
+        let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
+        let coords = points.map((point,index) => {
+            return {
+               latitude: point[1],
+               longitude: point[0],
+            }
+        });
+        dispatch({
+          type:GET_MUSLIM_COORDS,
+          payload:points
+        });
+      })
+    })
   };
-
-};
-
-export const GetGreenBusCoords=()=>{
-  return(dispatch, store)=>{
-        console.log("Hey")
-        request.get("https://maps.googleapis.com/maps/api/directions/json")
-        .query({
-          origin:"Gulshan e Hadeed Phase 2",
-          destination:"Jama Cloth House, Karachi",
-          mode:"driving",
-          key:"AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
-        })
-        .finish((error, res)=>{
-          console.log(res);
-          let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
-          let coords = points.map((point,index) => {
-              return {
-                 latitude: point[1],
-                 longitude: point[0],
-              }
-          });
-          dispatch({
-            type:GET_MUSLIM_COORDS,
-            payload:points
-          });
-
-
-        })
-  };
-
 };
 
 
-export const GetD1Coords=()=>{
-  return(dispatch, store)=>{
-        console.log("Hey")
-        request.get("https://maps.googleapis.com/maps/api/directions/json")
-        .query({
-          origin:"Pipri, Karachi",
-          destination:"Abidabad,Karachi",
-          mode:"driving",
-          key:"AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
-        })
-        .finish((error, res)=>{
-          console.log(res);
-          let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
-          let coords = points.map((point,index) => {
-              return {
-                 latitude: point[1],
-                 longitude: point[0],
-              }
-          });
-          dispatch({
-            type:GET_MUSLIM_COORDS,
-            payload:points
-          });
 
 
-        })
+
+
+//BUSES Add
+
+export const BusInput = (text) => {
+  return{
+    type: ADD_BUS_NAME,
+    payload: text
   };
+};
+
+export const resetAddBus = () => {
+  return{
+    type: "RESET_ADD_BUS"
+  };
+};
+
+export const AddNewBus = (name)=>{
+  console.log(name);
+  let check = false;
+  return(dispatch)=>{
+    if(name==="")
+    {
+      dispatch({
+        type:"BUS_ADDED_FAILED"
+      })
+    }
+    else {
+      firebase.database().ref('buses/')
+      .once('value', function(snapshot){
+        if(!snapshot.hasChild(name)){
+          firebase.database().ref('buses/'+name+'/waypoints/')
+          dispatch({
+            type:"BUS_ADDED_SUCCESS"
+          })
+          Actions.startpointmap();
+        }
+        else
+        {
+          dispatch({
+            type:"BUS_ADDED_FAILED"
+          })
+        }
+      });
+    }
+
+  }
+
 
 };
-//REGISTRATIONFORM
+
+export const addBusStartPoint = (coords) => {
+  return(dispatch,store)=>{
+      var busname = store().auth.busname;
+      var waypoint = coords.latitude+","+coords.longitude;
+      firebase.database().ref('/buses/'+busname).update({Startpoint:waypoint});
+      Actions.endpointmap();
+      dispatch({
+        type:"START_POINT_ADDED"
+      })
+  }
+}
+
+export const addBusEndPoint = (coords) => {
+  return(dispatch,store)=>{
+      var busname = store().auth.busname;
+      var waypoint = coords.latitude+","+coords.longitude;
+      firebase.database().ref('/buses/'+busname).update({Endpoint:waypoint});
+
+      Actions.addbus();
+      dispatch({
+        type:"END_POINT_ADDED"
+      })
+  }
+}
+
+
+export const getcurrentbuscoords = () => {
+  return(dispatch,store)=>{
+    var busname = store().auth.busname;
+    firebase.database().ref('/buses/'+busname).once("value")
+    .then(function(snapshot){
+      console.log(snapshot.val());
+      var startpoint = snapshot.child("Startpoint").val();
+      var endpoint = snapshot.child("Endpoint").val();
+      var waypoint = snapshot.child("Waypoint").val();
+      request.get("https://maps.googleapis.com/maps/api/directions/json")
+      .query({
+        origin:startpoint,
+        destination:endpoint,
+        waypoints:waypoint,
+        mode:"driving",
+        key:"AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
+      })
+      .finish((error, res)=>{
+        console.log(res);
+        let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
+        let coords = points.map((point,index) => {
+            return {
+               latitude: point[1],
+               longitude: point[0],
+            }
+        });
+        dispatch({
+          type:"CURRENT_BUS_COORDS",
+          payload:points
+        });
+      })
+    })
+
+  }
+}
+
+
+export const addBusWayPoint = (coords)=>{
+  return(dispatch,store)=>{
+      var busname = store().auth.busname;
+      var waypoint = coords.latitude+","+coords.longitude;
+      firebase.database().ref('buses/'+busname)
+      .once('value', function(snapshot){
+        if(!snapshot.hasChild("Waypoint")){
+          firebase.database().ref('/buses/'+busname).update({Waypoint:waypoint})
+          Actions.addbus();
+        }
+        else
+        {
+          firebase.database().ref('/buses/'+busname).once("value")
+          .then(function(snapshot){
+            console.log(snapshot.val());
+            var waypoint = snapshot.child("Waypoint").val();
+            waypoint = waypoint + "|" + coords.latitude+","+coords.longitude;
+            firebase.database().ref('/buses/'+busname).update({Waypoint:waypoint})
+            Actions.addbus();
+        });
+      }
+    });
+  }
+};
+
+
+
+export const getBusList = ()=>{
+  return(dispatch)=>{
+      const list = [];
+      firebase.database().ref("buses").orderByKey()
+      .once('value').then(function(snapshot){
+        snapshot.forEach(function(childSnapshot){
+          list.push(childSnapshot.key)
+        });
+      });
+      dispatch({
+        type:"GET_BUS_LIST",
+        payload:list
+      })
+    }
+};
+
+export const getWaypointList = () => {
+  return(dispatch,store )=>{
+    const list = [];
+    var busname = store().auth.busname;
+    busname.concat('/waypoints');
+    firebase.database().ref("buses/"+busname).orderByKey()
+    .once('value').then(function(snapshot){
+      snapshot.forEach(function(childSnapshot){
+        var item = childSnapshot.val();
+        list.push(item.key);
+      })
+    })
+    dispatch({
+      type:"GET_WAYPOINT_LIST",
+      payload:list
+    })
+  }
+}

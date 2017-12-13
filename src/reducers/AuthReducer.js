@@ -14,7 +14,8 @@ import {
   GET_SELECTED_ADDRESS,
   GET_DIRECTION_POLYLINE,
   GET_CHANGED_REGION,
-  GET_MUSLIM_COORDS
+  GET_MUSLIM_COORDS,
+  ADD_BUS_NAME
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -31,6 +32,14 @@ const INITIAL_STATE = {
   selectedDestinationAddress:{},
   coords:[],
   muslimCoords:[],
+  busname:'',
+  buserror:'',
+  busadded:false,
+  startadded:false,
+  endadded:false,
+  buslist:[],
+  waypointlist:[],
+  currentbuscoords:[]
 };
 
 const {width, height} = Dimensions.get("window");
@@ -127,7 +136,25 @@ export default (state = INITIAL_STATE, action) => {
         };
       case GET_MUSLIM_COORDS:
         return { ...state, muslimCoords:action.payload};
+      case "START_POINT_ADDED":
+        return { ...state, startadded:true}
+      case "END_POINT_ADDED":
+        return { ...state, endadded:true}
 
+      case "CURRENT_BUS_COORDS":
+        return { ...state, currentbuscoords:action.payload}
+      case "GET_BUS_LIST":
+        return { ...state, buslist:action.payload};
+      case "GET_WAYPOINT_LIST":
+        return { ...state, waypointlist:action.payload};
+      case ADD_BUS_NAME:
+        return { ...state, busname:action.payload};
+      case "BUS_ADDED_SUCCESS":
+        return { ...state, buserror:'', busadded:true};
+      case "BUS_ADDED_FAILED":
+        return { ...state, buserror:'Error! Bus name already exists',busadded:false};
+      case "RESET_ADD_BUS":
+        return { ...state, busname:'' ,buserror:'',busadded:false,startadded:false,endadded:false};
     default:
       return state;
   }

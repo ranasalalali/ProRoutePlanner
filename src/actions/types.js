@@ -18,3 +18,5 @@ export const GET_DIRECTION_POLYLINE='get_direction_polyline';
 export const GET_CHANGED_REGION='get_changed_region';
 
 export const GET_MUSLIM_COORDS='get_muslim_coords';
+
+export const ADD_BUS_NAME='add_bus_name';
