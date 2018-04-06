@@ -7,7 +7,8 @@ import { getCurrentLocation,
   getInputData,
   toggleSearchResultModal,
   getAddressPredictions,
-  getSelectedAddress
+  getSelectedAddress,
+  getBusList
 } from '../actions';
 
 import { connect } from 'react-redux';
@@ -16,6 +17,7 @@ class UserHome extends Component {
 
   componentWillMount(){
      this.props.getCurrentLocation();
+     this.props.getBusList();
   }
 
   render() {
@@ -28,6 +30,11 @@ class UserHome extends Component {
       title:"Bus",
       subTitle:"",
       icon:"bus"
+    },
+    {
+      title:"RickShaw",
+      subTitle:"",
+      icon:"car"
     }]
 
     closeDrawer = () => {
@@ -44,7 +51,7 @@ class UserHome extends Component {
         >
 
       <Container>
-      <Header>
+      <Header style={{backgroundColor:'black'}} androidStatusBarColor='black'>
         <Left>
           <Button transparent onPress={()=>openDrawer()}>
             <Icon name='menu'  />
@@ -68,14 +75,16 @@ class UserHome extends Component {
           coords={this.props.coords}
         />
       }
+
+      </Container>
       <Footer>
-        <FooterTab>
+        <FooterTab style={{backgroundColor:'black'}}>
           {
             tabs.map((obj,index)=>{
               return(
                 <Button key={index}>
-                  <Icon size={20} name={obj.icon} color={(index===0)? "#FFFFFF" : "grey"}/>
-                  <Text style={{fontSize:12, color:(index===0)? "#ffffff" : "grey"}}>{obj.title}</Text>
+                  <Icon size={20} name={obj.icon} color={(index===0)? "white" : "grey"}/>
+                  <Text style={{fontSize:12, color:(index===0)? "white" : "grey"}}>{obj.title}</Text>
                   <Text>{obj.subTitle}</Text>
                 </Button>
               )
@@ -83,7 +92,6 @@ class UserHome extends Component {
           }
         </FooterTab>
       </Footer>
-      </Container>
       </Drawer>
     );
   }
@@ -96,5 +104,5 @@ const mapStateToProps = ({auth}) => {
 
 
 export default connect(mapStateToProps, {
-  getCurrentLocation, getInputData, toggleSearchResultModal, getAddressPredictions, getSelectedAddress
+  getCurrentLocation, getInputData, toggleSearchResultModal, getAddressPredictions, getSelectedAddress,getBusList
 })(UserHome);

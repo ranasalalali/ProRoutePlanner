@@ -5,8 +5,9 @@ import firebase from 'firebase';
 import ReduxThunk from 'redux-thunk';
 import reducers from './src/reducers';
 import Router from './src/Router';
-import {View, Text} from 'native-base';
+import {View, Text, Root} from 'native-base';
 class App extends React.Component{
+
   componentWillMount(){
     const config = {
       apiKey: 'AIzaSyA9y2zYhu5djo-0aSVvQEJN-ggdCQE2Ojk',
@@ -19,10 +20,13 @@ class App extends React.Component{
     firebase.initializeApp(config);
   }
   render(){
+    console.disableYellowBox = true;
     const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
     return (
       <Provider store={store}>
-        <Router/>
+        <Root>
+          <Router/>
+        </Root>
       </Provider>
     );
   }

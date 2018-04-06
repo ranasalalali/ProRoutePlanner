@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import { Platform, StatusBar, DeviceEventEmitter } from 'react-native';
-import { Container, Text, Content,Card, CardItem, Input, Body, Button, Spinner,Item,Header } from 'native-base';
+import { Platform, StatusBar, DeviceEventEmitter,Image } from 'react-native';
+import { Container, Text, Content,Card, CardItem, Input,Left, Body, Button, Spinner,Item,Header,InputGroup } from 'native-base';
+import Icon from "react-native-vector-icons/FontAwesome";
 import { emailChanged, passwordChanged, loginUser, getBusList } from '../actions';
 import { connect } from 'react-redux';
 import {Actions} from 'react-native-router-flux';
@@ -21,13 +22,8 @@ class LoginForm extends Component {
 
   onButtonPress(){
     const { email, password } = this.props;
-    if(this.props.email==="admin" && this.props.password==="admin"){
-      this.props.getBusList();
-      Actions.adminmain();
-    }
-    else{
       this.props.loginUser ({email,password});
-    }
+ 
 
   }
 
@@ -37,8 +33,8 @@ class LoginForm extends Component {
       return <Spinner color="green"/>;
     }
     return (
-        <Button full rounded info onPress={this.onButtonPress.bind(this)}>
-          <Text style={{color:'white'}}>Log In</Text>
+        <Button full light onPress={this.onButtonPress.bind(this)}>
+          <Text style={{color:'black'}}>Log In</Text>
         </Button>
     );
   }
@@ -47,32 +43,35 @@ class LoginForm extends Component {
   render(){
       return(
         <Container style={{justifyContent:'center'}}>
-          <Header>
-          <Body>
-            <Text style={{color:'white',alignSelf:'center',fontSize:25}}>ProRoutePlanner</Text>
-          </Body>
-          </Header>
+          <Image style={{alignItems: 'center',alignSelf:'center'}}source={require('../Images/ProRoutePlanner.jpg')} />
         <Content>
         <Card>
           <CardItem>
-              <Item rounded>
+              <Item>
+                <Icon name='user' />
+                <InputGroup>
                 <Input
-                  label="Email"
-                  placeholder="user@gmail.com"
+                  label="Username"
+                  placeholder="salal786"
                   onChangeText={this.onEmailChange.bind(this)}
                   value={this.props.email}
                 />
+                </InputGroup>
               </Item>
+
           </CardItem>
           <CardItem>
-              <Item rounded>
+              <Item>
+                <Icon name='lock' />
+                <InputGroup>
                 <Input
                   secureTextEntry
                   label="Password"
-                  placeholder="password"
+                  placeholder="******"
                   onChangeText={this.onPasswordChange.bind(this)}
                   value={this.props.password}
                 />
+                </InputGroup>
               </Item>
           </CardItem>
                 <Text style={styles.errorTextStyle}>
@@ -80,8 +79,8 @@ class LoginForm extends Component {
                 </Text>
         </Card>
             {this.renderButton()}
-
-            <Button full rounded primary onPress={()=>Actions.registermain()}>
+  
+            <Button full dark onPress={()=>Actions.registermain()}>
               <Text style={{color:'white'}}>Register</Text>
             </Button>
         </Content>

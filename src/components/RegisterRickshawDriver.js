@@ -6,7 +6,7 @@ import * as firebase from 'firebase';
 import {  getBusList
 } from '../actions';
 
-class RegisterBusDriver extends Component {
+class RegisterRickshawDriver extends Component {
 
   constructor(props) {
     super(props);
@@ -93,8 +93,8 @@ class RegisterBusDriver extends Component {
                           firebase.database().ref('admins/')
                           .once('value', function(snapshot){
                             if(!snapshot.hasChild(username)){
-                              firebase.database().ref('busdrivers/'+username+'/name/');
-                              firebase.database().ref('busdrivers/'+username).set({Name:name,Username:username,Email:email,Password:password,Bus:bus,License:license});
+                              firebase.database().ref('rickshawdrivers/'+username+'/name/');
+                              firebase.database().ref('rickshawdrivers/'+username).set({Name:name,Username:username,Email:email,Password:password,Bus:bus,License:license});
                               Toast.show({
                                 text:'User Registered Successfully',
                                 position:'bottom',
@@ -204,7 +204,7 @@ class RegisterBusDriver extends Component {
       <Container>
         <Header style={{backgroundColor:'black'}} androidStatusBarColor='black'>
         <Body>
-          <Text style={{color:'white',alignSelf:'center'}}>Bus Driver Registration</Text>
+          <Text style={{color:'white',alignSelf:'center'}}>Rickshaw Driver Registration</Text>
         </Body>
         </Header>
         <Content>
@@ -309,4 +309,4 @@ const mapStateToProps = ({auth}) => {
 
 export default connect(mapStateToProps, {
   getBusList
-})(RegisterBusDriver);
+})(RegisterRickshawDriver);

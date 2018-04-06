@@ -26,6 +26,7 @@ const INITIAL_STATE = {
   loading: false,
   region:{},
   inputData:{},
+  searchinput:'',
   resultTypes:{},
   predictions:[],
   selectedSourceAddress:{},
@@ -39,7 +40,11 @@ const INITIAL_STATE = {
   endadded:false,
   buslist:[],
   waypointlist:[],
-  currentbuscoords:[]
+  currentbuscoords:[],
+  selectedregion:{latitude: 24.8615,
+  longitude: 67.0099,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421}
 };
 
 const {width, height} = Dimensions.get("window");
@@ -82,6 +87,21 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, inputData:{
         [key]:value
       }};
+
+    case "GET_SEARCH_INPUT":
+      return {...state, searchinput:action.payload};
+
+    case "GET_SELECTED_REGION":
+      return {...state, selectedregion:{latitude: action.payload.latitude,
+      longitude: action.payload.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA}};
+
+    case "RESET_MAP":
+      return { ...state, selectedregion:{latitude: 24.8615,
+      longitude: 67.0099,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421}};
 
     case TOGGLE_SEARCH_RESULT:
       if(action.payload === 'Source'){

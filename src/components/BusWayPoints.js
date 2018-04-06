@@ -7,7 +7,7 @@ import {Actions} from 'react-native-router-flux';
 import { connect } from 'react-redux';
 import {AddNewBus,BusInput,getWaypointList} from '../actions'
 
-class AddBus extends Component {
+class BusWayPoints extends Component {
 
   componentWillMount(){
     this.props.getWaypointList();
@@ -22,37 +22,24 @@ class AddBus extends Component {
     this.props.AddNewBus(busname);
   }
 
-  listorbutton(){
-    if(this.props.busadded && this.props.startadded && this.props.endadded){
-      var Items = this.props.waypointlist;
-      return(
-        <View>
-        <List dataArray={Items}
-          renderRow={(item) =>
-            <ListItem>
-              <Body>
-              <Text>{item}</Text>
-              </Body>
-              <Right>
-              <Icon name='pin' style={{color:'black'}}/>
-              </Right>
-            </ListItem>
-          }>
-        </List>
-        <Button full dark onPress={()=>Actions.coordmap()}>
-          <Icon name='add' />
-          <Text>Add New Waypoint</Text>
-        </Button>
-        </View>
-      )
-    }
-    else {
-      return(
-            <Button full dark onPress={this.onAddPress.bind(this)}>
-              <Text>NEXT</Text>
-            </Button>
-      )
-    }
+  list(){
+    var Items = this.props.waypointlist;
+    return(
+      <View>
+      <List dataArray={Items}
+        renderRow={(item) =>
+          <ListItem>
+            <Body>
+            <Text>{item}</Text>
+            </Body>
+            <Right>
+            <Icon name='pin' style={{color:'black'}}/>
+            </Right>
+          </ListItem>
+        }>
+      </List>
+      </View>
+    )
   }
 
   render() {
@@ -68,24 +55,26 @@ class AddBus extends Component {
             </Button>
           </Left>
           <Body>
-            <Text style={{color:'white'}}>Add New Bus</Text>
+            <Text style={{color:'white'}}>{this.props.busname}</Text>
           </Body>
         </Header>
         <Card>
           <CardItem>
             <Item>
               <Input
+                disabled
                 label="BusName"
                 placeholder="Enter Bus Name"
                 onChangeText={this.onBusNameChange.bind(this)}
-                value={this.props.busname}
+                value={"Bus: "+this.props.busname}
               />
             </Item>
           </CardItem>
-          <Text style={styles.errorTextStyle}>
-            {this.props.buserror}
-          </Text>
-          {this.listorbutton()}
+          {this.list()}
+          <Button full dark onPress={()=>Actions.coordmap()}>
+            <Icon name='add' />
+            <Text>Add New Waypoint</Text>
+          </Button>
 
         </Card>
       </Container>
@@ -106,4 +95,4 @@ const mapStateToProps = ({auth}) => {
   return{busname,buserror,busadded,waypointlist,startadded,endadded};
 };
 
-export default connect(mapStateToProps,{AddNewBus,BusInput,getWaypointList})(AddBus);
+export default connect(mapStateToProps,{AddNewBus,BusInput,getWaypointList})(BusWayPoints);

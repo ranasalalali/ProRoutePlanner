@@ -28,7 +28,7 @@ export const SearchBox = ({getInputData,
 	}
 
 		return(
-			<View style={styles.searchBox}>
+		<View style={styles.searchBox}>
         <View style={styles.inputWrapper}>
 					<Text style={styles.label}>Source</Text>
 					<InputGroup>

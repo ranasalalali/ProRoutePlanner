@@ -6,21 +6,31 @@ import MapContainer from './MapContainer';
 import SideBar from './SideBar';
 import {Actions} from 'react-native-router-flux';
 import { connect } from 'react-redux';
-import { resetAddBus, getBusList } from '../actions';
+import { resetAddBus, getBusList, BusInput, getcurrentbuscoords } from '../actions';
 class AdminMain extends Component {
 
   componentWillMount(){
      this.props.getBusList();
   }
 
+  onBusPress(bus){
+    this.props.BusInput(bus);
+    this.props.getcurrentbuscoords();
+    Actions.buswaypoints();
+  }
 
   BusesList(){
     var Items = this.props.buslist;
     return(
       <List dataArray={Items}
         renderRow={(item) =>
-          <ListItem>
+          <ListItem onPress={()=>this.onBusPress(item)}>
+            <Body>
             <Text>{item}</Text>
+            </Body>
+            <Right>
+            <Icon name='bus' style={{color:'black'}}/>
+            </Right>
           </ListItem>
         }>
       </List>
@@ -49,10 +59,10 @@ class AdminMain extends Component {
         >
 
       <Container>
-      <Header>
+      <Header style={{backgroundColor:'black'}} androidStatusBarColor='black'>
         <Left>
           <Button transparent onPress={()=>openDrawer()}>
-            <Icon name='menu'  />
+            <Icon name='menu' />
           </Button>
         </Left>
         <Body>
@@ -60,7 +70,7 @@ class AdminMain extends Component {
         </Body>
         <Right>
         <Button transparent onPress={()=>AddBus()}>
-          <Icon name='add'  />
+          <Icon name='add' />
         </Button>
         </Right>
       </Header>
@@ -76,4 +86,4 @@ const mapStateToProps = ({auth}) => {
   return{busname,buserror,busadded,buslist};
 };
 
-export default connect(mapStateToProps,{resetAddBus,getBusList})(AdminMain);
+export default connect(mapStateToProps,{resetAddBus,getBusList,BusInput,getcurrentbuscoords})(AdminMain);

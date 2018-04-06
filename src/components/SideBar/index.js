@@ -2,17 +2,50 @@ import React, { Component } from 'react';
 import {
   Text,Image
 } from 'react-native';
-import {Content,Button} from 'native-base';
+import {Content,Icon,Button,List,View,ListItem,Left,Body,Right} from 'native-base';
 import {Actions} from 'react-native-router-flux';
 
 export default class Sidebar extends Component {
   render() {
     return (
           <Content style={{backgroundColor:'#FFFFFF'}}>
-            <Button rounded full primary onPress={()=>Actions.userhome()}><Text style={{color:'white'}}>Home</Text></Button>
-            <Button rounded full success onPress={()=>Actions.busroutes()}><Text style={{color:'white'}}>Bus Routes</Text></Button>
-            <Button rounded full success onPress={()=>Actions.userhome()}><Text style={{color:'white'}}>Site Seeing</Text></Button>
-            <Button rounded full danger onPress={()=>Actions.login()}><Text style={{color:'white'}}>Logout</Text></Button>
+            <Image style={{alignItems: 'center',alignSelf:'center'}}source={require('../../Images/ProRoutePlanner.jpg')} />
+            <List>
+              <View>
+  								<ListItem onPress={()=>Actions.userhome()}>
+  									<Left>
+  										<Icon name='home' />
+  									</Left>
+  									<Body>
+  										<Text>Home</Text>
+  									</Body>
+                    <Right>
+                      <Icon name='arrow-forward'/>
+                    </Right>
+  								</ListItem>
+                  <ListItem onPress={()=>Actions.busroutes()}>
+  									<Left>
+  										<Icon name='bus' />
+  									</Left>
+  									<Body>
+  										<Text>Bus Routes</Text>
+  									</Body>
+                    <Right>
+                      <Icon name='arrow-forward'/>
+                    </Right>
+  								</ListItem>
+                  <ListItem onPress={()=>Actions.login()}>
+  									<Left>
+  										<Icon style={{color:'red'}} name='power' />
+  									</Left>
+  									<Body>
+  										<Text style={{color:'red'}}>Logout</Text>
+  									</Body>
+                    <Right>
+                    </Right>
+  								</ListItem>
+  							</View>
+  					</List>
           </Content>
     );
   }

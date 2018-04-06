@@ -1,148 +1,107 @@
 import React, { Component } from 'react';
-import {StyleSheet} from 'react-native';
-import { Container,Text,View, Header, Content, Form, Item, Input, Button,Card,CardItem } from 'native-base';
+import {StyleSheet,Picker} from 'react-native';
+import { Container,Text,View, Header, Content, Form, Item, Input, Button,Card,CardItem,Body } from 'native-base';
 import { connect } from 'react-redux';
+import {  getBusList
+} from '../actions';
 
 class RegisterTaxiDriver extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {Route: false, Free: false};
+    this.state = {
+      selected2: 'Select Bus'
+    };
   }
 
-  onRouteButtonPress = () => {
+  onValueChange2(value: string) {
     this.setState({
-      Route: true,
-      Free:false
+      selected2: value
     });
   }
-  onFreeButtonPress = () => {
-    this.setState({
-      Route: false,
-      Free: true
-    });
-  }
-
-  Form(){
-    if(this.state.Free)
-      return(
+  updateDropdown(){
+      var items = this.props.buslist;
+      console.log(items);
+      const all_items = items.map((category, i) => {
+        console.log(category)
+        return (
+            <Picker.Item key={category} label={category} value={category} />
+          )
+       });
+       return all_items;
+     }
+  render() {
+    return (
+      <Container>
+        <Header style={{backgroundColor:'black'}} androidStatusBarColor='black'>
+        <Body>
+          <Text style={{color:'white',alignSelf:'center'}}>Taxi Driver Registration</Text>
+        </Body>
+        </Header>
+        <Content>
         <Card style={{alignItems:'center'}}>
-          <CardItem>
-              <Item rounded>
-                <Input
-                  label="Phone"
-                  placeholder="+923473369206"
-                />
-              </Item>
-          </CardItem>
-          <CardItem>
-              <Item rounded>
-                <Input
-                  secureTextEntry
-                  label="Password"
-                  placeholder="password"
-                />
-              </Item>
-          </CardItem>
-          <CardItem>
-              <Item rounded>
-                <Input
-                  label="License Plate"
-                  placeholder="XXX-XXX"
-                />
-              </Item>
-          </CardItem>
-          <CardItem>
-              <Item rounded>
-              <Button full rounded info>
-                <Text style={{color:'white'}}>Register</Text>
-              </Button>
-              </Item>
-          </CardItem>
-        </Card>
-      )
-    if(this.state.Route)
-      return(
-        <Card style={{alignItems:'center'}}>
-          <CardItem>
-          <Card style={{alignItems:'center'}}>
+          
             <CardItem>
-                <Item rounded>
+                <Item>
                   <Input
-                    label="Phone"
-                    placeholder="+923473369206"
+                    label="Name"
+                    placeholder="Name"
                   />
                 </Item>
             </CardItem>
             <CardItem>
-                <Item rounded>
+                <Item >
                   <Input
-                    secureTextEntry
+                    label="Email"
+                    placeholder="Email"
+                  />
+                </Item>
+            </CardItem>
+            <CardItem>
+                <Item>
+                  <Input
                     label="Password"
-                    placeholder="password"
+                    placeholder="Password"
                   />
                 </Item>
             </CardItem>
+            
             <CardItem>
-                <Item rounded>
+                <Item>
                   <Input
-                    label="License Plate"
-                    placeholder="XXX-XXX"
+                    label="Confirm Password"
+                    placeholder="Confirm Password"
                   />
                 </Item>
             </CardItem>
             <CardItem>
-                <Item rounded>
+                <Item>
                   <Input
-                    label="Starting Point"
-                    placeholder="Search from list"
+                    label="License Number"
+                    placeholder="License Number"
                   />
                 </Item>
             </CardItem>
             <CardItem>
-                <Item rounded>
-                  <Input
-                    label="Destination Point"
-                    placeholder="Search from list"
-                  />
-                </Item>
-            </CardItem>
-            <CardItem>
-                <Item rounded>
-                <Button full rounded info>
+                <Item>
+                <Button full dark>
                   <Text style={{color:'white'}}>Register</Text>
                 </Button>
                 </Item>
             </CardItem>
-          </Card>
-          </CardItem>
         </Card>
-      )
-  }
-
-
-  render() {
-    return (
-      <Container>
-        <Content>
-          <Card style={{alignItems:'center'}}>
-            <CardItem>
-              <Text style={{alignSelf:'center'}}>Who Are You?</Text>
-            </CardItem>
-            <CardItem>
-              <Button full rounded info onPress={this.onRouteButtonPress}>
-                <Text style={{color:'white'}}>Route Driver</Text>
-              </Button>
-              <Button full rounded info onPress={this.onFreeButtonPress}>
-                <Text style={{color:'white'}}>Free Driver</Text>
-              </Button>
-            </CardItem>
-          </Card>
-          {this.Form()}
         </Content>
       </Container>
     );
   }
 }
 
-export default RegisterTaxiDriver;
+const mapStateToProps = ({auth}) => {
+  const {buslist} = auth;
+  return{buslist};
+};
+
+
+export default connect(mapStateToProps, {
+  getBusList
+})(RegisterTaxiDriver);

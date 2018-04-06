@@ -54,7 +54,7 @@ class BusRoutes extends Component {
         >
 
       <Container>
-      <Header>
+      <Header style={{backgroundColor:'black'}} androidStatusBarColor='black'>
         <Left>
           <Button transparent onPress={()=>openDrawer()}>
             <Icon name='menu'  />

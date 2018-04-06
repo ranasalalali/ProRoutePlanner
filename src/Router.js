@@ -6,12 +6,14 @@ import UserHome from './components/UserHome';
 import RegisterMain from './components/RegisterMain';
 import RegisterTaxiDriver from './components/RegisterTaxiDriver';
 import RegisterBusDriver from './components/RegisterBusDriver';
+import RegisterRickshawDriver from './components/RegisterRickshawDriver';
 import BusRoutes from './components/BusRoutes';
 import AdminMain from './components/AdminMain';
 import AddBus from './components/AddBus';
 import CoordMap from './components/CoordMap';
 import EndPointMap from './components/EndPointMap';
 import StartPointMap from './components/StartPointMap';
+import BusWayPoints from './components/BusWayPoints';
 
 const RouterComponent = () => {
   return(
@@ -22,11 +24,13 @@ const RouterComponent = () => {
       <Scene key="registermain" component={RegisterMain} title="RegisterMain" panHandlers={null}/>
       <Scene key="registertaxidriver" component={RegisterTaxiDriver} title="RegisterTaxiDriver" panHandlers={null}/>
       <Scene key="registerbusdriver" component={RegisterBusDriver} title="RegisterBusDriver" panHandlers={null}/>
+      <Scene key="registerrickshawdriver" component={RegisterRickshawDriver} title="RegisterRickshawDriver" panHandlers={null}/>
       <Scene key="adminmain" component={AdminMain} title="Admin Main" panHandlers={null} />
       <Scene key="addbus" component={AddBus} title="Add Bus" panHandlers={null} />
       <Scene key="coordmap" component={CoordMap} title="Choose Location" panHandlers={null}/>
       <Scene key="startpointmap" component={StartPointMap} title="Choose Location" panHandlers={null}/>
       <Scene key="endpointmap" component={EndPointMap} title="Choose Location" panHandlers={null}/>
+      <Scene key="buswaypoints" component={BusWayPoints} title="Choose Location" panHandlers={null}/>
     </Router>
   );
 };

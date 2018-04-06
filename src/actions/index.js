@@ -41,14 +41,79 @@ export const passwordChanged = (text) => {
 export const loginUser = ({ email, password }) => {
   return (dispatch) => {
     dispatch({type:LOGIN_USER});
-
-    firebase.auth().signInWithEmailAndPassword(email, password)
-      .then(user => loginUserSuccess(dispatch,user))
-      .catch(() => {
-        firebase.auth().createUserWithEmailAndPassword(email, password)
-          .then(user => loginUserSuccess(dispatch,user))
-          .catch(()=>loginUserFail(dispatch));
-      });
+    firebase.database().ref('busdrivers/')
+    .once('value', function(snapshot){
+      if(snapshot.hasChild(email)){
+        firebase.database().ref("/buses/"+email)
+        .once('value').then(function(snapshot){
+          var places = snapshot.child("password").val();
+          dispatch({
+            type: LOGIN_USER_SUCCESS,
+            payload:email
+          });
+          Actions.userhome();
+        })
+      }
+      firebase.database().ref('taxidrivers/')
+      .once('value', function(snapshot){
+        if(snapshot.hasChild(email)){
+          firebase.database().ref("/taxidrivers/"+email)
+          .once('value').then(function(snapshot){
+            var places = snapshot.child("password").val();
+            dispatch({
+              type: LOGIN_USER_SUCCESS,
+              payload:email
+            });
+            Actions.userhome();
+          })
+        }
+        firebase.database().ref('rickshawdrivers/')
+        .once('value', function(snapshot){
+          if(snapshot.hasChild(email)){
+            firebase.database().ref("/rickshawdrivers/"+email)
+            .once('value').then(function(snapshot){
+              var places = snapshot.child("password").val();
+              dispatch({
+                type: LOGIN_USER_SUCCESS,
+                payload:email
+              });
+              Actions.userhome();
+            })
+          }
+          firebase.database().ref('users/')
+          .once('value', function(snapshot){
+            if(snapshot.hasChild(email)){
+              firebase.database().ref("/users/"+email)
+              .once('value').then(function(snapshot){
+                var places = snapshot.child("password").val();
+                dispatch({
+                  type: LOGIN_USER_SUCCESS,
+                  payload:email
+                });
+                Actions.userhome();
+              })
+            }
+            firebase.database().ref('admins/')
+            .once('value', function(snapshot){
+              if(snapshot.hasChild(email)){
+                firebase.database().ref("/admins/"+email)
+                .once('value').then(function(snapshot){
+                  var places = snapshot.child("password").val();
+                  dispatch({
+                    type: LOGIN_USER_SUCCESS,
+                    payload:email
+                  });
+                  Actions.adminmain();
+                })
+              }
+              else{
+                loginUserFail(dispatch);
+              }
+            })
+          })
+        })          
+      })
+    })
   };
 };
 
@@ -84,13 +149,32 @@ export const getCurrentLocation = () => {
   }
 };
 
+
+export const getSearchPredictions=(val)=>{
+  return(dispatch) => {
+    let userInput = val;
+    RNGooglePlaces.getAutocompletePredictions(userInput,{
+  	  latitude: 25.0700,
+  	  longitude: 67.2848,
+  	  radius: 40
+    })
+    .then((place)=>
+      dispatch({
+        type:GET_ADDRESS_PREDICTIONS,
+        payload:place
+      })
+    )
+    .catch((error)=>console.log(error.message));
+  };
+}
+
 export const getAddressPredictions=()=>{
   return(dispatch, store) => {
     let userInput = store().auth.resultTypes.Source ? store().auth.inputData.Source : store().auth.inputData.Destination;
     RNGooglePlaces.getAutocompletePredictions(userInput,{
-  	  latitude: 24.934993,
-  	  longitude: 67.122951,
-  	  radius: 30
+      latitude: 25.0700,
+  	  longitude: 67.2848,
+  	  radius: 40
     })
     .then((place)=>
       dispatch({
@@ -109,6 +193,13 @@ export const getInputData = (payload) => {
   };
 };
 
+export const getSearchInput = (payload) => {
+  return{
+    type:"GET_SEARCH_INPUT",
+    payload:payload
+  }
+}
+
 export const toggleSearchResultModal= (payload)=>{
   return{
     type:TOGGLE_SEARCH_RESULT,
@@ -116,6 +207,24 @@ export const toggleSearchResultModal= (payload)=>{
   };
 };
 
+export const getSelectedRegion = (payload)=>{
+  return(dispatch, store)=>{
+    RNGooglePlaces.lookUpPlaceByID(payload)
+    .then((results)=>{
+      let reg={latitude:results.latitude,longitude:results.longitude}
+      dispatch({
+        type:"GET_SELECTED_REGION",
+        payload:reg
+      })
+    })
+  }
+}
+
+export const resetMap = () => {
+  return{
+    type:"RESET_MAP"
+  }
+}
 
 export const getSelectedAddress = (payload,current)=>{
   return(dispatch, store)=>{
@@ -279,6 +388,7 @@ export const addBusEndPoint = (coords) => {
 export const getcurrentbuscoords = () => {
   return(dispatch,store)=>{
     var busname = store().auth.busname;
+    console.log(busname);
     firebase.database().ref('/buses/'+busname).once("value")
     .then(function(snapshot){
       console.log(snapshot.val());
@@ -313,15 +423,20 @@ export const getcurrentbuscoords = () => {
 }
 
 
-export const addBusWayPoint = (coords)=>{
+export const addBusWayPoint = (placeid)=>{
   return(dispatch,store)=>{
+      let placename = '';
+      RNGooglePlaces.lookUpPlaceByID(placeid)
+      .then((results)=>{
+        placename = results.name;
+      })
       var busname = store().auth.busname;
-      var waypoint = coords.latitude+","+coords.longitude;
+      var waypoint = "place_id:"+placeid;
       firebase.database().ref('buses/'+busname)
       .once('value', function(snapshot){
         if(!snapshot.hasChild("Waypoint")){
-          firebase.database().ref('/buses/'+busname).update({Waypoint:waypoint})
-          Actions.addbus();
+          firebase.database().ref('/buses/'+busname).update({Waypoint:waypoint,Places:placename})
+          Actions.buswaypoints();
         }
         else
         {
@@ -329,9 +444,11 @@ export const addBusWayPoint = (coords)=>{
           .then(function(snapshot){
             console.log(snapshot.val());
             var waypoint = snapshot.child("Waypoint").val();
-            waypoint = waypoint + "|" + coords.latitude+","+coords.longitude;
-            firebase.database().ref('/buses/'+busname).update({Waypoint:waypoint})
-            Actions.addbus();
+            var places = snapshot.child("Places").val();
+            places = places + " || " + placename;
+            waypoint = waypoint + "|place_id:" + placeid;
+            firebase.database().ref('/buses/'+busname).update({Waypoint:waypoint,Places:places})
+            Actions.buswaypoints();
         });
       }
     });
@@ -358,19 +475,17 @@ export const getBusList = ()=>{
 
 export const getWaypointList = () => {
   return(dispatch,store )=>{
-    const list = [];
+    var list = [];
     var busname = store().auth.busname;
-    busname.concat('/waypoints');
-    firebase.database().ref("buses/"+busname).orderByKey()
+    firebase.database().ref("/buses/"+busname)
     .once('value').then(function(snapshot){
-      snapshot.forEach(function(childSnapshot){
-        var item = childSnapshot.val();
-        list.push(item.key);
+      var places = snapshot.child("Places").val();
+      let list = places.split("||");
+      dispatch({
+        type:"GET_WAYPOINT_LIST",
+        payload:list
       })
     })
-    dispatch({
-      type:"GET_WAYPOINT_LIST",
-      payload:list
-    })
+
   }
 }
