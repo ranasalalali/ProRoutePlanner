@@ -18,7 +18,8 @@ import {
   GET_DIRECTION_POLYLINE,
   GET_CHANGED_REGION,
   GET_MUSLIM_COORDS,
-  ADD_BUS_NAME
+  ADD_BUS_NAME,
+  SET_CURRENT_DRIVER_BUS
 } from './types';
 
 
@@ -38,20 +39,51 @@ export const passwordChanged = (text) => {
   };
 };
 
+
 export const loginUser = ({ email, password }) => {
   return (dispatch) => {
     dispatch({type:LOGIN_USER});
     firebase.database().ref('busdrivers/')
     .once('value', function(snapshot){
       if(snapshot.hasChild(email)){
-        firebase.database().ref("/buses/"+email)
+        firebase.database().ref("/busdrivers/"+email)
         .once('value').then(function(snapshot){
-          var places = snapshot.child("password").val();
+          var places = snapshot.child("Password").val();
+          var busname = snapshot.child("Bus").val();
+          firebase.database().ref('/buses/'+busname).once("value")
+          .then(function(snapshot){
+            console.log(snapshot.val());
+            var startpoint = snapshot.child("Startpoint").val();
+            var endpoint = snapshot.child("Endpoint").val();
+            var waypoint = snapshot.child("Waypoint").val();
+            request.get("https://maps.googleapis.com/maps/api/directions/json")
+            .query({
+              origin:startpoint,
+              destination:endpoint,
+              waypoints:waypoint,
+              mode:"driving",
+              key:"AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
+            })
+            .finish((error, res)=>{
+              console.log(res);
+              let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
+              let coords = points.map((point,index) => {
+                  return {
+                    latitude: point[1],
+                    longitude: point[0],
+                  }
+              });
+              dispatch({
+                type:GET_MUSLIM_COORDS,
+                payload:points
+              });
+            })
+          })
           dispatch({
             type: LOGIN_USER_SUCCESS,
             payload:email
           });
-          Actions.userhome();
+          Actions.busdrivermain();
         })
       }
       firebase.database().ref('taxidrivers/')
@@ -123,7 +155,6 @@ const loginUserSuccess = (dispatch, user) => {
     type: LOGIN_USER_SUCCESS,
     payload:user
   });
-  Actions.userhome();
 };
 
 const loginUserFail = (dispatch) => {
@@ -270,6 +301,41 @@ export const getSelectedAddress = (payload,current)=>{
   };
 };
 
+
+const SetBusRouteForUser = (busname)=>{
+  return(dispatch, store)=>{
+    firebase.database().ref('/buses/'+busname).once("value")
+    .then(function(snapshot){
+      console.log(snapshot.val());
+      var startpoint = snapshot.child("Startpoint").val();
+      var endpoint = snapshot.child("Endpoint").val();
+      var waypoint = snapshot.child("Waypoint").val();
+      request.get("https://maps.googleapis.com/maps/api/directions/json")
+      .query({
+        origin:startpoint,
+        destination:endpoint,
+        waypoints:waypoint,
+        mode:"driving",
+        key:"AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
+      })
+      .finish((error, res)=>{
+        console.log(res);
+        let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
+        let coords = points.map((point,index) => {
+            return {
+               latitude: point[1],
+               longitude: point[0],
+            }
+        });
+        dispatch({
+          type:GET_MUSLIM_COORDS,
+          payload:points
+        });
+        Actions.busdrivermain();
+      })
+    })
+  };
+};
 
 export const GetBusRoute=(busname)=>{
   return(dispatch, store)=>{

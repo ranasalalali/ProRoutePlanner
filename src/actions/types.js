@@ -3,7 +3,7 @@ export const PASSWORD_CHANGED = 'password_changed';
 export const LOGIN_USER_SUCCESS = 'login_user_success';
 export const LOGIN_USER_FAIL = 'login_user_fail'
 export const LOGIN_USER = 'login_user';
-
+export const SET_CURRENT_DRIVER_BUS = 'set_current_driver_bus';
 
 export const GET_CURRENT_LOCATION = 'get_current_location';
 export const GET_INPUT='get_input';

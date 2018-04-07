@@ -15,13 +15,15 @@ import {
   GET_DIRECTION_POLYLINE,
   GET_CHANGED_REGION,
   GET_MUSLIM_COORDS,
-  ADD_BUS_NAME
+  ADD_BUS_NAME,
+  SET_CURRENT_DRIVER_BUS
 } from '../actions/types';
 
 const INITIAL_STATE = {
   email:  '',
   password: '',
-  user: null,
+  user: '',
+  currentdriverbus:'',
   error: '',
   loading: false,
   region:{},
@@ -68,7 +70,10 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, loading: true, error:''};
 
     case LOGIN_USER_SUCCESS:
-      return {...state, ...INITIAL_STATE, user: action.payload };
+      return {...state, user: action.payload };
+
+    case SET_CURRENT_DRIVER_BUS:
+      return {...state, currentdriverbus: action.payload };
 
     case LOGIN_USER_FAIL:
       return { ...state, error: 'Authentication Failed.', password: '', loading: false };
