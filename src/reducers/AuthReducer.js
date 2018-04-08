@@ -46,7 +46,8 @@ const INITIAL_STATE = {
   selectedregion:{latitude: 24.8615,
   longitude: 67.0099,
   latitudeDelta: 0.0922,
-  longitudeDelta: 0.0421}
+  longitudeDelta: 0.0421},
+  livebuscoords:[]
 };
 
 const {width, height} = Dimensions.get("window");
@@ -70,7 +71,7 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, loading: true, error:''};
 
     case LOGIN_USER_SUCCESS:
-      return {...state, user: action.payload };
+      return {...state, ...INITIAL_STATE, user: action.payload };
 
     case SET_CURRENT_DRIVER_BUS:
       return {...state, currentdriverbus: action.payload };
@@ -180,6 +181,9 @@ export default (state = INITIAL_STATE, action) => {
         return { ...state, buserror:'Error! Bus name already exists',busadded:false};
       case "RESET_ADD_BUS":
         return { ...state, busname:'' ,buserror:'',busadded:false,startadded:false,endadded:false};
+
+      case "GET_LIVE_BUS_COORDS":
+      return { ...state, livebuscoords:action.payload};
     default:
       return state;
   }

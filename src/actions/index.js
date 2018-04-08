@@ -40,69 +40,38 @@ export const passwordChanged = (text) => {
 };
 
 
+export const getLiveBusCoords = () => {
+  return(dispatch) => {
+    var Markers = new Array();
+    firebase.database().ref("/busdrivers/").orderByKey()
+      .once('value').then(function(snapshot){
+        snapshot.forEach(function(childSnapshot){
+          var busdriver = childSnapshot.key;
+          firebase.database().ref("/busdrivers/"+busdriver)
+          .once('value').then(function(snapshot){
+            var bus = snapshot.child("Bus").val();
+            var latitude = snapshot.child("latitude").val();
+            var longitude = snapshot.child("longitude").val();
+            dic = {title:bus,coordinates:{latitude:latitude,longitude:longitude}}
+            Markers.push(dic);
+          })
+        });
+      });
+      dispatch({
+        type:"GET_LIVE_BUS_COORDS",
+        payload:Markers
+      })
+  }
+}
+
 export const loginUser = ({ email, password }) => {
   return (dispatch) => {
     dispatch({type:LOGIN_USER});
-    firebase.database().ref('busdrivers/')
-    .once('value', function(snapshot){
-      if(snapshot.hasChild(email)){
-        firebase.database().ref("/busdrivers/"+email)
-        .once('value').then(function(snapshot){
-          var places = snapshot.child("Password").val();
-          var busname = snapshot.child("Bus").val();
-          firebase.database().ref('/buses/'+busname).once("value")
-          .then(function(snapshot){
-            console.log(snapshot.val());
-            var startpoint = snapshot.child("Startpoint").val();
-            var endpoint = snapshot.child("Endpoint").val();
-            var waypoint = snapshot.child("Waypoint").val();
-            request.get("https://maps.googleapis.com/maps/api/directions/json")
-            .query({
-              origin:startpoint,
-              destination:endpoint,
-              waypoints:waypoint,
-              mode:"driving",
-              key:"AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
-            })
-            .finish((error, res)=>{
-              console.log(res);
-              let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
-              let coords = points.map((point,index) => {
-                  return {
-                    latitude: point[1],
-                    longitude: point[0],
-                  }
-              });
-              dispatch({
-                type:GET_MUSLIM_COORDS,
-                payload:points
-              });
-            })
-          })
-          dispatch({
-            type: LOGIN_USER_SUCCESS,
-            payload:email
-          });
-          Actions.busdrivermain();
-        })
-      }
-      firebase.database().ref('taxidrivers/')
-      .once('value', function(snapshot){
-        if(snapshot.hasChild(email)){
-          firebase.database().ref("/taxidrivers/"+email)
-          .once('value').then(function(snapshot){
-            var places = snapshot.child("password").val();
-            dispatch({
-              type: LOGIN_USER_SUCCESS,
-              payload:email
-            });
-            Actions.userhome();
-          })
-        }
-        firebase.database().ref('rickshawdrivers/')
+    var db = firebase.database();
+    db.ref('users/')
         .once('value', function(snapshot){
           if(snapshot.hasChild(email)){
-            firebase.database().ref("/rickshawdrivers/"+email)
+            db.ref("/users/"+email)
             .once('value').then(function(snapshot){
               var places = snapshot.child("password").val();
               dispatch({
@@ -112,40 +81,104 @@ export const loginUser = ({ email, password }) => {
               Actions.userhome();
             })
           }
-          firebase.database().ref('users/')
+          else
+          db.ref('busdrivers/')
           .once('value', function(snapshot){
             if(snapshot.hasChild(email)){
-              firebase.database().ref("/users/"+email)
+              db.ref("/busdrivers/"+email)
               .once('value').then(function(snapshot){
-                var places = snapshot.child("password").val();
+                var places = snapshot.child("Password").val();
+                var busname = snapshot.child("Bus").val();
+                db.ref('/buses/'+busname).once("value")
+                .then(function(snapshot){
+                  console.log(snapshot.val());
+                  var startpoint = snapshot.child("Startpoint").val();
+                  var endpoint = snapshot.child("Endpoint").val();
+                  var waypoint = snapshot.child("Waypoint").val();
+                  request.get("https://maps.googleapis.com/maps/api/directions/json")
+                  .query({
+                    origin:startpoint,
+                    destination:endpoint,
+                    waypoints:waypoint,
+                    mode:"driving",
+                    key:"AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
+                  })
+                  .finish((error, res)=>{
+                    console.log(res);
+                    let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
+                    let coords = points.map((point,index) => {
+                        return {
+                          latitude: point[1],
+                          longitude: point[0],
+                        }
+                    });
+                    dispatch({
+                      type:GET_MUSLIM_COORDS,
+                      payload:points
+                    });
+                  })
+                })
                 dispatch({
                   type: LOGIN_USER_SUCCESS,
                   payload:email
                 });
-                Actions.userhome();
+                Actions.busdrivermain();
               })
             }
-            firebase.database().ref('admins/')
+            else
+            db.ref('taxidrivers/')
             .once('value', function(snapshot){
+              console.log("CheckTaxiDrivers");
               if(snapshot.hasChild(email)){
-                firebase.database().ref("/admins/"+email)
+                db.ref("/taxidrivers/"+email)
                 .once('value').then(function(snapshot){
                   var places = snapshot.child("password").val();
                   dispatch({
                     type: LOGIN_USER_SUCCESS,
                     payload:email
                   });
-                  Actions.adminmain();
+                  Actions.userhome();
                 })
               }
-              else{
-                loginUserFail(dispatch);
-              }
+              else
+                db.ref('rickshawdrivers/')
+                .once('value', function(snapshot){
+                  console.log("CheckRickshawDrivers");
+                  if(snapshot.hasChild(email)){
+                    db.ref("/rickshawdrivers/"+email)
+                    .once('value').then(function(snapshot){
+                      var places = snapshot.child("password").val();
+                      dispatch({
+                        type: LOGIN_USER_SUCCESS,
+                        payload:email
+                      });
+                      Actions.userhome();
+                    })
+                  }
+                  else
+                  db.ref('admins/')
+                    .once('value', function(snapshot){
+                      console.log("CheckAdmins");
+                      if(snapshot.hasChild(email)){
+                        db.ref("/admins/"+email)
+                        .once('value').then(function(snapshot){
+                          var places = snapshot.child("password").val();
+                          dispatch({
+                            type: LOGIN_USER_SUCCESS,
+                            payload:email
+                          });
+                          Actions.adminmain();
+                        })
+                      }
+                      else
+                      {
+                        loginUserFail(dispatch);
+                      }
+                    })  
+                })
             })
-          })
-        })          
-      })
-    })
+        })    
+    }) 
   };
 };
 
@@ -175,7 +208,7 @@ export const getCurrentLocation = () => {
         });
       },
       (error)=>console.log(error.message),
-      {enableHighAccuracy: false, timeout: 5000, maximumAge: 0}
+      {enableHighAccuracy: false, timeout: 300000, maximumAge: 0}
     );
   }
 };

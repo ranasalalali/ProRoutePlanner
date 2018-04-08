@@ -8,19 +8,31 @@ import { getCurrentLocation,
   toggleSearchResultModal,
   getAddressPredictions,
   getSelectedAddress,
-  getBusList
+  getBusList,
+  getLiveBusCoords
 } from '../actions';
 
 import { connect } from 'react-redux';
 
 class UserHome extends Component {
-
-  componentWillMount(){
-     this.props.getCurrentLocation();
-     this.props.getBusList();
+  componentDidMount(){
+    var rx = this;
+    this.props.getCurrentLocation();
+    this.props.getBusList();
+    setTimeout(function(){
+      rx.props.getLiveBusCoords();
+    },5000);
   }
 
+  componentWillMount(){
+    var rx = this;  
+    this.props.getCurrentLocation();
+    this.props.getBusList();
+      rx.props.getLiveBusCoords();
+    }
+
   render() {
+
     const tabs = [{
       title:"TaxiCar",
       subTitle:"",
@@ -73,6 +85,7 @@ class UserHome extends Component {
           selectedDestinationAddress={this.props.selectedDestinationAddress}
           selectedSourceAddress={this.props.selectedSourceAddress}
           coords={this.props.coords}
+          livebuscoords={this.props.livebuscoords}
         />
       }
 
@@ -98,11 +111,11 @@ class UserHome extends Component {
 }
 
 const mapStateToProps = ({auth}) => {
-  const {email, password, error, loading,region,inputData,resultTypes,predictions,selectedSourceAddress,selectedDestinationAddress,coords} = auth;
-  return{email, password, error, loading,region,inputData,resultTypes,predictions,selectedSourceAddress,selectedDestinationAddress,coords};
+  const {livebuscoords,region,inputData,resultTypes,predictions,selectedSourceAddress,selectedDestinationAddress,coords} = auth;
+  return{livebuscoords,region,inputData,resultTypes,predictions,selectedSourceAddress,selectedDestinationAddress,coords};
 };
 
 
 export default connect(mapStateToProps, {
-  getCurrentLocation, getInputData, toggleSearchResultModal, getAddressPredictions, getSelectedAddress,getBusList
+  getLiveBusCoords, getCurrentLocation, getInputData, toggleSearchResultModal, getAddressPredictions, getSelectedAddress,getBusList
 })(UserHome);

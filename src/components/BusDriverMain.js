@@ -8,7 +8,6 @@ import RNPolyline  from 'rn-maps-polyline'
 import { StyleSheet } from 'react-native';
 import SideBar from './SideBar';
 import { connect } from 'react-redux';
-import TimerMixin from 'react-timer-mixin';
 import firebase from 'firebase';
 import { GetBusRoute, getBusList, loginUser,getCurrentLocation
 } from '../actions';
@@ -16,14 +15,14 @@ import { GetBusRoute, getBusList, loginUser,getCurrentLocation
 class BusDriverMain extends Component {
 
     
-    componentWillMount(){
-        this.props.getCurrentLocation();
-     }
+  componentWillMount(){
+    this.props.getCurrentLocation();
+  }
   constructor(props) {
     super(props);
     this.state = {
       selected2: undefined,
-      workmode:false,
+      workmode:true,
       coordinates:{}
     };
   }
@@ -126,10 +125,9 @@ class BusDriverMain extends Component {
           initialRegion={{
             latitude: 24.8615,
             longitude: 67.0099,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.999,
           }}
-          region={this.props.region.latitude && this.props.region}
         >
         <MapView.Polyline
             lineCap="round"

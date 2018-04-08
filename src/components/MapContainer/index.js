@@ -1,10 +1,13 @@
 import React from 'react';
-import { View } from 'native-base';
+import { View,Button,Text } from 'native-base';
 import MapView from 'react-native-maps';
 import SearchBox from '../SearchBox/Index.js';
 import SearchResults from '../SearchResults/Index.js';
 import styles from './MapContainerStyles.js';
 import Polyline from '@mapbox/polyline';
+import bus from '../../Images/bus-pin.png'
+import Icon from "react-native-vector-icons/FontAwesome";
+import { getLiveBusCoords } from '../../actions/index.js';
 
 export const MapContainer = ({region,
   getInputData,
@@ -15,7 +18,13 @@ export const MapContainer = ({region,
   getSelectedAddress,
   selectedSourceAddress,
   selectedDestinationAddress,
-  coords}) => {
+  coords,
+  livebuscoords}) => {
+
+
+    function handleButton(){
+      getLiveBusCoords();
+    }
 
   return(
     <View style={styles.container}>
@@ -25,13 +34,20 @@ export const MapContainer = ({region,
         showsUserLocation={true}
         showsMyLocationButton={true}
         initialRegion={{
-          latitude: 24.8615,
-          longitude: 67.0099,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+          latitude: 25.0700,
+          longitude: 67.2848,
+          latitudeDelta: 0.043,
+          longitudeDelta: 0.655,
         }}
-        region={region}
       >
+
+      {livebuscoords && livebuscoords.map((marker, index) => ( 
+      <MapView.Marker 
+      key={index} 
+      coordinate={marker.coordinates} 
+      title={marker.title} 
+      image={bus}
+      /> ))}
         <MapView.Polyline
             coordinates={coords}
             strokeColor="blue"
@@ -44,9 +60,13 @@ export const MapContainer = ({region,
        selectedSourceAddress={selectedSourceAddress}
        selectedDestinationAddress={selectedDestinationAddress}
       />
+      <Button iconLeft dark onPress={handleButton.bind(this)}>
+            <Icon name='repeat' style={{color:'white'}} />
+      </Button>
       { (resultTypes.Source || resultTypes.Destination)  &&
         <SearchResults predictions={predictions} getSelectedAddress={getSelectedAddress}/>
       }
+      
     </View>
   )
 }
