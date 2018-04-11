@@ -1,6 +1,6 @@
 import React from "react";
 import {Text} from "react-native";
-import { View, List, ListItem, InputGroup, Input, Left, Body, Icon } from "native-base";
+import { View, List, ListItem, InputGroup, Input, Left, Body, Icon,Container } from "native-base";
 import styles from "./SearchResultsStyles.js";
 import RNGooglePlaces from 'react-native-google-places';
 export const SearchResults = ({predictions, getSelectedAddress})=> {
@@ -34,9 +34,8 @@ export const SearchResults = ({predictions, getSelectedAddress})=> {
 
 		return(
 			<View style={styles.searchResultsWrapper}>
-				{list()}
+			{list()}
 			</View>
-
 		);
 };
 

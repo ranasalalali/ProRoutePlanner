@@ -15,10 +15,19 @@ class BusRoutes extends Component {
 
   constructor(props) {
     super(props);
+    this.props.getBusList();
     this.state = {
       selected2: undefined
     };
   }
+  componentWillMount(){
+    this.props.getBusList();
+ }
+
+ componentDidMount()
+ {
+   this.props.getBusList();
+ }
   onValueChange2(value: string) {
     this.setState({
       selected2: value

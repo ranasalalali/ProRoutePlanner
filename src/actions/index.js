@@ -19,7 +19,8 @@ import {
   GET_CHANGED_REGION,
   GET_MUSLIM_COORDS,
   ADD_BUS_NAME,
-  SET_CURRENT_DRIVER_BUS
+  SET_CURRENT_DRIVER_BUS,
+  GET_LIVE_BUS_COORDS
 } from './types';
 
 
@@ -54,14 +55,16 @@ export const getLiveBusCoords = () => {
             var longitude = snapshot.child("longitude").val();
             dic = {title:bus,coordinates:{latitude:latitude,longitude:longitude}}
             Markers.push(dic);
+            // console.log(Markers);
           })
         });
-      });
+      }).then(()=>{
       dispatch({
-        type:"GET_LIVE_BUS_COORDS",
+        type: GET_LIVE_BUS_COORDS,
         payload:Markers
       })
-  }
+  });
+}
 }
 
 export const loginUser = ({ email, password }) => {
@@ -78,6 +81,25 @@ export const loginUser = ({ email, password }) => {
                 type: LOGIN_USER_SUCCESS,
                 payload:email
               });
+              var Markers = new Array();
+              firebase.database().ref("/busdrivers/").orderByKey()
+                .once('value').then(function(snapshot){
+                  snapshot.forEach(function(childSnapshot){
+                    var busdriver = childSnapshot.key;
+                    firebase.database().ref("/busdrivers/"+busdriver)
+                    .once('value').then(function(snapshot){
+                      var bus = snapshot.child("Bus").val();
+                      var latitude = snapshot.child("latitude").val();
+                      var longitude = snapshot.child("longitude").val();
+                      dic = {title:bus,coordinates:{latitude:latitude,longitude:longitude}}
+                      Markers.push(dic);
+                    })
+                  });
+                });
+                dispatch({
+                  type: GET_LIVE_BUS_COORDS,
+                  payload:Markers
+                })
               Actions.userhome();
             })
           }

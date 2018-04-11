@@ -15,21 +15,50 @@ import { getCurrentLocation,
 import { connect } from 'react-redux';
 
 class UserHome extends Component {
-  componentDidMount(){
-    var rx = this;
-    this.props.getCurrentLocation();
-    this.props.getBusList();
-    setTimeout(function(){
-      rx.props.getLiveBusCoords();
-    },5000);
-  }
 
-  componentWillMount(){
-    var rx = this;  
+  constructor(props){
+    super(props);
     this.props.getCurrentLocation();
-    this.props.getBusList();
-      rx.props.getLiveBusCoords();
-    }
+    this.state = {
+      livebus:[{
+        title: 'D7',
+        coordinates: {
+          latitude: 24.8568351,
+          longitude: 67.2646832
+        },
+      },
+      {
+        title: 'Green CNG 1',
+        coordinates: {
+          latitude: 24.8700484,
+          longitude: 67.3545007
+        },  
+      }]
+    };
+    
+    setInterval(()=>{
+      this.props.getLiveBusCoords();
+      console.log(this.state.livebus);
+      this.setState({livebus:this.props.livebuscoords  
+    })
+    }, 10000)
+
+ }
+
+  // componentWillUpdate(nextState){
+  //   this.setState({livebus:nextState.livebus});
+  // }
+
+//  componentDidMount()
+//  {
+//    var rx= this;
+//    this.props.getCurrentLocation();
+//    rx.props.getLiveBusCoords();
+//    setTimeout(function(){
+//     rx.props.getLiveBusCoords();
+//    },5000);
+//  }
+
 
   render() {
 
@@ -56,6 +85,7 @@ class UserHome extends Component {
       this.drawer._root.open()
     };
     return (
+      
       <Drawer
         ref={(ref) => { this.drawer = ref; }}
         content={<SideBar navigator={this._navigator} />}
@@ -74,6 +104,7 @@ class UserHome extends Component {
         </Body>
 
       </Header>
+      
         {this.props.region.latitude &&
         <MapContainer region={this.props.region}
           getInputData={this.props.getInputData}
@@ -85,7 +116,7 @@ class UserHome extends Component {
           selectedDestinationAddress={this.props.selectedDestinationAddress}
           selectedSourceAddress={this.props.selectedSourceAddress}
           coords={this.props.coords}
-          livebuscoords={this.props.livebuscoords}
+          livebuscoords={this.state.livebus}
         />
       }
 

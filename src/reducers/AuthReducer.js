@@ -16,7 +16,8 @@ import {
   GET_CHANGED_REGION,
   GET_MUSLIM_COORDS,
   ADD_BUS_NAME,
-  SET_CURRENT_DRIVER_BUS
+  SET_CURRENT_DRIVER_BUS,
+  GET_LIVE_BUS_COORDS
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -58,8 +59,12 @@ const LONGITUDE_DELTA = ASPECT_RATIO * LATITUDE_DELTA;
 
 
 export default (state = INITIAL_STATE, action) => {
-  console.log(action);
+
   switch(action.type){
+
+    case GET_LIVE_BUS_COORDS:
+    //console.log(action.payload);
+      return {...state, livebuscoords:action.payload};
 
     case EMAIL_CHANGED:
       return { ...state, email: action.payload };
@@ -182,8 +187,7 @@ export default (state = INITIAL_STATE, action) => {
       case "RESET_ADD_BUS":
         return { ...state, busname:'' ,buserror:'',busadded:false,startadded:false,endadded:false};
 
-      case "GET_LIVE_BUS_COORDS":
-      return { ...state, livebuscoords:action.payload};
+     
     default:
       return state;
   }

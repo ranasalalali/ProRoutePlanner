@@ -26,8 +26,23 @@ export const MapContainer = ({region,
       getLiveBusCoords();
     }
 
+    function busmarkers(){
+      if (livebuscoords.length>0){
+				return(
+					  livebuscoords.map((marker, index) => ( 
+            <MapView.Marker 
+            key={index} 
+            coordinate={marker.coordinates} 
+            title={marker.title} 
+            image={bus}
+            /> ))
+				);
+			}
+    }
+
   return(
     <View style={styles.container}>
+      <Text>{livebuscoords.title}</Text>
       <MapView
         provider={MapView.PROVIDER_GOOGLE}
         style={styles.map}
@@ -40,19 +55,14 @@ export const MapContainer = ({region,
           longitudeDelta: 0.655,
         }}
       >
-
-      {livebuscoords && livebuscoords.map((marker, index) => ( 
-      <MapView.Marker 
-      key={index} 
-      coordinate={marker.coordinates} 
-      title={marker.title} 
-      image={bus}
-      /> ))}
+      {busmarkers()}
+      
         <MapView.Polyline
             coordinates={coords}
             strokeColor="blue"
             strokeWidth={3}/>
       </MapView>
+      
 
       <SearchBox getInputData={getInputData}
        toggleSearchResultModal={toggleSearchResultModal}
@@ -66,7 +76,6 @@ export const MapContainer = ({region,
       { (resultTypes.Source || resultTypes.Destination)  &&
         <SearchResults predictions={predictions} getSelectedAddress={getSelectedAddress}/>
       }
-      
     </View>
   )
 }
