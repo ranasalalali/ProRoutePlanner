@@ -6,6 +6,7 @@ import SearchResults from '../SearchResults/Index.js';
 import styles from './MapContainerStyles.js';
 import Polyline from '@mapbox/polyline';
 import bus from '../../Images/bus-pin.png'
+import taxi from '../../Images/taxi-pin.png'
 import Icon from "react-native-vector-icons/FontAwesome";
 import { getLiveBusCoords } from '../../actions/index.js';
 
@@ -19,7 +20,8 @@ export const MapContainer = ({region,
   selectedSourceAddress,
   selectedDestinationAddress,
   coords,
-  livebuscoords}) => {
+  livebuscoords,
+  livetaxicoords}) => {
 
 
     function handleButton(){
@@ -35,11 +37,25 @@ export const MapContainer = ({region,
             coordinate={marker.coordinates} 
             title={marker.title} 
             image={bus}
-            /> ))
+            />))
 				);
 			}
     }
 
+    function taximarkers(){
+      if (livetaxicoords.length>0){
+				return(
+					  livetaxicoords.map((marker, index) => ( 
+            <MapView.Marker 
+            key={index} 
+            description={marker.phone}
+            coordinate={marker.coordinates} 
+            title={marker.title} 
+            image={taxi}
+            />))
+				);
+			}
+    }
   return(
     <View style={styles.container}>
       <Text>{livebuscoords.title}</Text>
@@ -56,6 +72,7 @@ export const MapContainer = ({region,
         }}
       >
       {busmarkers()}
+      {taximarkers()}
       
         <MapView.Polyline
             coordinates={coords}
@@ -70,9 +87,6 @@ export const MapContainer = ({region,
        selectedSourceAddress={selectedSourceAddress}
        selectedDestinationAddress={selectedDestinationAddress}
       />
-      <Button iconLeft dark onPress={handleButton.bind(this)}>
-            <Icon name='repeat' style={{color:'white'}} />
-      </Button>
       { (resultTypes.Source || resultTypes.Destination)  &&
         <SearchResults predictions={predictions} getSelectedAddress={getSelectedAddress}/>
       }

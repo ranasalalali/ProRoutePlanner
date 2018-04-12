@@ -22,3 +22,8 @@ export const GET_MUSLIM_COORDS='get_muslim_coords';
 export const ADD_BUS_NAME='add_bus_name';
 
 export const GET_LIVE_BUS_COORDS='get_live_bus_coords';
+export const GET_LIVE_TAXI_COORDS='get_live_taxi_coords';
+
+export const GET_DISTANCE_MATRIX='get_distance_matrix';
+
+export const GET_FARE='get_fare';

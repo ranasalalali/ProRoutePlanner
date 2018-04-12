@@ -23,16 +23,10 @@ class BusRoutes extends Component {
   componentWillMount(){
     this.props.getBusList();
  }
-
- componentDidMount()
- {
-   this.props.getBusList();
- }
   onValueChange2(value: string) {
     this.setState({
       selected2: value
     });
-
     this.props.GetBusRoute(value);
   }
   updateDropdown(){

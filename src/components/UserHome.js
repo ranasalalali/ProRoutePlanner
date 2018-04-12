@@ -3,13 +3,15 @@ import { Platform, StatusBar } from 'react-native';
 import { View, Footer, FooterTab, Container, Text, Button,Content, Header,Drawer,Left,Icon,Body } from 'native-base';
 import MapContainer from './MapContainer';
 import SideBar from './SideBar';
+import Fare from './Fare';
 import { getCurrentLocation,
   getInputData,
   toggleSearchResultModal,
   getAddressPredictions,
   getSelectedAddress,
   getBusList,
-  getLiveBusCoords
+  getLiveBusCoords,
+  getLiveTaxiCoords
 } from '../actions';
 
 import { connect } from 'react-redux';
@@ -20,29 +22,36 @@ class UserHome extends Component {
     super(props);
     this.props.getCurrentLocation();
     this.state = {
-      livebus:[{
-        title: 'D7',
-        coordinates: {
-          latitude: 24.8568351,
-          longitude: 67.2646832
-        },
-      },
-      {
-        title: 'Green CNG 1',
-        coordinates: {
-          latitude: 24.8700484,
-          longitude: 67.3545007
-        },  
-      }]
+      livebus:[],
+      livetaxi:[],
+      activetab:'taxi'
     };
     
-    setInterval(()=>{
-      this.props.getLiveBusCoords();
-      console.log(this.state.livebus);
-      this.setState({livebus:this.props.livebuscoords  
-    })
-    }, 10000)
+    
+ }
 
+ componentWillMount(){
+  setInterval(()=>{
+    this.props.getLiveTaxiCoords();
+    this.props.getLiveBusCoords();
+    this.setState({livebus:this.props.livebuscoords,
+        livetaxi:this.props.livetaxicoords
+    })
+    // if(this.state.activetab==='taxi')
+    // {
+    //   this.props.getLiveTaxiCoords();
+    //   this.setState({livebus:[],
+    //     livetaxi:this.props.livetaxicoords
+    //   })
+    // }
+    // else if(this.state.activetab==='bus')
+    // {
+    //   this.props.getLiveBusCoords();
+    //   this.setState({livebus:this.props.livebuscoords,
+    //     livetaxi:[]
+    //   })
+    // }   
+  }, 6000)
  }
 
   // componentWillUpdate(nextState){
@@ -61,22 +70,6 @@ class UserHome extends Component {
 
 
   render() {
-
-    const tabs = [{
-      title:"TaxiCar",
-      subTitle:"",
-      icon:"car"
-    },
-    {
-      title:"Bus",
-      subTitle:"",
-      icon:"bus"
-    },
-    {
-      title:"RickShaw",
-      subTitle:"",
-      icon:"car"
-    }]
 
     closeDrawer = () => {
       this.drawer._root.close()
@@ -117,24 +110,28 @@ class UserHome extends Component {
           selectedSourceAddress={this.props.selectedSourceAddress}
           coords={this.props.coords}
           livebuscoords={this.state.livebus}
+          livetaxicoords={this.state.livetaxi}
         />
+      }
+
+      {
+        this.props.taxifare && 
+        <Fare fare={this.props.taxifare}/>
       }
 
       </Container>
       <Footer>
-        <FooterTab style={{backgroundColor:'black'}}>
-          {
-            tabs.map((obj,index)=>{
-              return(
-                <Button key={index}>
-                  <Icon size={20} name={obj.icon} color={(index===0)? "white" : "grey"}/>
-                  <Text style={{fontSize:12, color:(index===0)? "white" : "grey"}}>{obj.title}</Text>
-                  <Text>{obj.subTitle}</Text>
-                </Button>
-              )
-            })
-          }
-        </FooterTab>
+      <FooterTab style={{backgroundColor:'black'}}>
+            <Button>
+              <Text>TaxiCar</Text>
+            </Button>
+            <Button>
+              <Text>Buses</Text>
+            </Button>
+            <Button>
+              <Text>Rickshaws</Text>
+            </Button>
+      </FooterTab>
       </Footer>
       </Drawer>
     );
@@ -142,11 +139,11 @@ class UserHome extends Component {
 }
 
 const mapStateToProps = ({auth}) => {
-  const {livebuscoords,region,inputData,resultTypes,predictions,selectedSourceAddress,selectedDestinationAddress,coords} = auth;
-  return{livebuscoords,region,inputData,resultTypes,predictions,selectedSourceAddress,selectedDestinationAddress,coords};
+  const {livetaxicoords,taxifare,livebuscoords,region,inputData,resultTypes,predictions,selectedSourceAddress,selectedDestinationAddress,coords} = auth;
+  return{livetaxicoords,taxifare,livebuscoords,region,inputData,resultTypes,predictions,selectedSourceAddress,selectedDestinationAddress,coords};
 };
 
 
 export default connect(mapStateToProps, {
-  getLiveBusCoords, getCurrentLocation, getInputData, toggleSearchResultModal, getAddressPredictions, getSelectedAddress,getBusList
+  getLiveTaxiCoords,getLiveBusCoords, getCurrentLocation, getInputData, toggleSearchResultModal, getAddressPredictions, getSelectedAddress,getBusList
 })(UserHome);

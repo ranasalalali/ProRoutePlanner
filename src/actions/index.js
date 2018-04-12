@@ -20,8 +20,12 @@ import {
   GET_MUSLIM_COORDS,
   ADD_BUS_NAME,
   SET_CURRENT_DRIVER_BUS,
-  GET_LIVE_BUS_COORDS
+  GET_LIVE_BUS_COORDS,
+  GET_LIVE_TAXI_COORDS,
+  GET_DISTANCE_MATRIX,
+  GET_FARE
 } from './types';
+import calculateFare from '../util/fairCalculator';
 
 
 //LOGIN FORM
@@ -67,11 +71,44 @@ export const getLiveBusCoords = () => {
 }
 }
 
+export const getLiveTaxiCoords = () => {
+  return(dispatch) => {
+    var TaxiMarkers = new Array();
+    firebase.database().ref("/taxidrivers/").orderByKey()
+      .once('value').then(function(snapshot){
+        snapshot.forEach(function(childSnapshot){
+          var busdriver = childSnapshot.key;
+          firebase.database().ref("/taxidrivers/"+busdriver)
+          .once('value').then(function(snapshot){
+            var name = snapshot.child("Name").val();
+            var number = snapshot.child("Phone").val();
+            var latitude = snapshot.child("latitude").val();
+            var longitude = snapshot.child("longitude").val();
+            dict = {title:name,phone:number,coordinates:{latitude:latitude,longitude:longitude}}
+            TaxiMarkers.push(dict);
+            // console.log(Markers);
+          })
+        })
+      }).then(()=>{
+      dispatch({
+        type: GET_LIVE_TAXI_COORDS,
+        payload:TaxiMarkers
+      })
+  });
+}
+}
+
+export const logoutUser = () => {
+  return(dispatch) => {
+    type:'LOGOUT'
+  }
+}
+
 export const loginUser = ({ email, password }) => {
   return (dispatch) => {
     dispatch({type:LOGIN_USER});
     var db = firebase.database();
-    db.ref('users/')
+        db.ref('users/')
         .once('value', function(snapshot){
           if(snapshot.hasChild(email)){
             db.ref("/users/"+email)
@@ -81,25 +118,6 @@ export const loginUser = ({ email, password }) => {
                 type: LOGIN_USER_SUCCESS,
                 payload:email
               });
-              var Markers = new Array();
-              firebase.database().ref("/busdrivers/").orderByKey()
-                .once('value').then(function(snapshot){
-                  snapshot.forEach(function(childSnapshot){
-                    var busdriver = childSnapshot.key;
-                    firebase.database().ref("/busdrivers/"+busdriver)
-                    .once('value').then(function(snapshot){
-                      var bus = snapshot.child("Bus").val();
-                      var latitude = snapshot.child("latitude").val();
-                      var longitude = snapshot.child("longitude").val();
-                      dic = {title:bus,coordinates:{latitude:latitude,longitude:longitude}}
-                      Markers.push(dic);
-                    })
-                  });
-                });
-                dispatch({
-                  type: GET_LIVE_BUS_COORDS,
-                  payload:Markers
-                })
               Actions.userhome();
             })
           }
@@ -159,7 +177,7 @@ export const loginUser = ({ email, password }) => {
                     type: LOGIN_USER_SUCCESS,
                     payload:email
                   });
-                  Actions.userhome();
+                  Actions.taxidrivermain();
                 })
               }
               else
@@ -313,6 +331,12 @@ export const resetMap = () => {
 }
 
 export const getSelectedAddress = (payload,current)=>{
+  const dummyNumbers={
+    baseFare:0.4,
+    timeRate:0.14,
+    distanceRate:90,
+    surge:1
+  }
   return(dispatch, store)=>{
     RNGooglePlaces.lookUpPlaceByID(payload)
     .then((results)=>{
@@ -323,24 +347,26 @@ export const getSelectedAddress = (payload,current)=>{
     })
     .then(()=>{
       if(store().auth.selectedSourceAddress.selectedSource && store().auth.selectedDestinationAddress.selectedDestination){
+        let origin = store().auth.selectedSourceAddress.selectedSource.latitude + "," + store().auth.selectedSourceAddress.selectedSource.longitude;
+        let destination = store().auth.selectedDestinationAddress.selectedDestination.latitude + "," + store().auth.selectedDestinationAddress.selectedDestination.longitude;
         request.get("https://maps.googleapis.com/maps/api/directions/json")
         .query({
-          origin:store().auth.selectedSourceAddress.selectedSource.latitude + "," + store().auth.selectedSourceAddress.selectedSource.longitude,
-          destination:store().auth.selectedDestinationAddress.selectedDestination.latitude + "," + store().auth.selectedDestinationAddress.selectedDestination.longitude,
+          origin:origin,
+          destination:destination,
           mode:"driving",
           key:"AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
         })
         .finish((error, res)=>{
           let lat = store().auth.selectedSourceAddress.selectedSource.latitude;
           let long = store().auth.selectedSourceAddress.selectedSource.longitude;
-          console.log(lat);
+          //console.log(lat);
           let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
           let coords = points.map((point,index) => {
               return {
                  latitude: point[1],
                  longitude: point[0],
               }
-          });
+          })
           dispatch({
             type:GET_DIRECTION_POLYLINE,
             payload:points
@@ -350,7 +376,40 @@ export const getSelectedAddress = (payload,current)=>{
             payload:{lat,long}
           });
         })
+          request.get("https://maps.googleapis.com/maps/api/distancematrix/json")
+          .query({
+            origins:origin,
+            destinations:destination,
+            mode:"driving",
+            key:"AIzaSyCZqwfBEbHTwI0Zam7b86EK4Fb8JvckwRo"
+          })
+          .finish((error,res)=>{
+            dispatch({
+              type:GET_DISTANCE_MATRIX,
+              payload:res.body
+
+            })
+            setTimeout(function(){
+              if(store().auth.selectedSourceAddress.selectedSource && store().auth.selectedDestinationAddress.selectedDestination){
+                const fare = calculateFare(
+                  dummyNumbers.baseFare,
+                  dummyNumbers.timeRate,
+                  store().auth.distancematrix.rows[0].elements[0].duration.value,
+                  dummyNumbers.distanceRate,
+                  store().auth.distancematrix.rows[0].elements[0].duration.value,
+                  dummyNumbers.surge
+                );
+                dispatch({
+                  type:GET_FARE,
+                  payload:fare
+                })
+              }
+            },1000)
+
+          })
       }
+
+      
     })
     .catch((error)=>console.log(error.message));
   };
@@ -586,11 +645,13 @@ export const getBusList = ()=>{
         snapshot.forEach(function(childSnapshot){
           list.push(childSnapshot.key)
         });
-      });
-      dispatch({
-        type:"GET_BUS_LIST",
-        payload:list
+      }).then(()=>{
+        dispatch({
+          type:"GET_BUS_LIST",
+          payload:list
+        })
       })
+      
     }
 };
 

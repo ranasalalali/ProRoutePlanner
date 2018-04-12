@@ -2,13 +2,14 @@ import React, {Component} from 'react';
 import { Platform, StatusBar, DeviceEventEmitter,Image } from 'react-native';
 import { Container, Text, Content,Card, CardItem, Input,Left, Body, Button, Spinner,Item,Header,InputGroup } from 'native-base';
 import Icon from "react-native-vector-icons/FontAwesome";
-import { emailChanged, passwordChanged, loginUser, getBusList } from '../actions';
+import { emailChanged, passwordChanged, loginUser, getBusList, logoutUser } from '../actions';
 import { connect } from 'react-redux';
 import {Actions} from 'react-native-router-flux';
 
 class LoginForm extends Component {
 
   componentWillMount(){
+    this.props.logoutUser();
     this.props.getBusList();
   }
 
@@ -106,5 +107,5 @@ const mapStateToProps = ({auth}) => {
 
 
 export default connect(mapStateToProps, {
-  emailChanged, passwordChanged, loginUser,getBusList
+  emailChanged, passwordChanged, loginUser,getBusList,logoutUser
 })(LoginForm);

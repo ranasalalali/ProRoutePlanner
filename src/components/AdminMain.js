@@ -12,11 +12,6 @@ class AdminMain extends Component {
   componentWillMount(){
      this.props.getBusList();
   }
-
-  componentDidMount()
-  {
-    this.props.getBusList();
-  }
   onBusPress(bus){
     this.props.BusInput(bus);
     this.props.getcurrentbuscoords();

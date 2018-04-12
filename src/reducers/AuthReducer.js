@@ -17,7 +17,10 @@ import {
   GET_MUSLIM_COORDS,
   ADD_BUS_NAME,
   SET_CURRENT_DRIVER_BUS,
-  GET_LIVE_BUS_COORDS
+  GET_LIVE_BUS_COORDS,
+  GET_DISTANCE_MATRIX,
+  GET_FARE,
+  GET_LIVE_TAXI_COORDS
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -48,7 +51,8 @@ const INITIAL_STATE = {
   longitude: 67.0099,
   latitudeDelta: 0.0922,
   longitudeDelta: 0.0421},
-  livebuscoords:[]
+  livebuscoords:[],
+  livetaxicoords:[]
 };
 
 const {width, height} = Dimensions.get("window");
@@ -59,12 +63,19 @@ const LONGITUDE_DELTA = ASPECT_RATIO * LATITUDE_DELTA;
 
 
 export default (state = INITIAL_STATE, action) => {
-
+  console.log(action);
   switch(action.type){
 
+    case 'LOGOUT':
+      return{ INITIAL_STATE };
+
     case GET_LIVE_BUS_COORDS:
-    //console.log(action.payload);
+      
       return {...state, livebuscoords:action.payload};
+
+    case GET_LIVE_TAXI_COORDS:
+
+      return {...state, livetaxicoords:action.payload};
 
     case EMAIL_CHANGED:
       return { ...state, email: action.payload };
@@ -155,6 +166,10 @@ export default (state = INITIAL_STATE, action) => {
         }
       }
       }
+
+      case GET_FARE:
+      return{...state,taxifare:action.payload}
+
       case GET_DIRECTION_POLYLINE:
         return { ...state, coords:action.payload};
       case GET_CHANGED_REGION:
@@ -187,6 +202,8 @@ export default (state = INITIAL_STATE, action) => {
       case "RESET_ADD_BUS":
         return { ...state, busname:'' ,buserror:'',busadded:false,startadded:false,endadded:false};
 
+      case GET_DISTANCE_MATRIX:
+        return { ...state, distancematrix:action.payload}
      
     default:
       return state;

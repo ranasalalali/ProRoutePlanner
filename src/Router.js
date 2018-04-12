@@ -14,7 +14,8 @@ import CoordMap from './components/CoordMap';
 import EndPointMap from './components/EndPointMap';
 import StartPointMap from './components/StartPointMap';
 import BusWayPoints from './components/BusWayPoints';
-import BusDriverMain from './components/BusDriverMain'
+import BusDriverMain from './components/BusDriverMain';
+import TaxiDriverMain from './components/TaxiDriverMain';
 const RouterComponent = () => {
   return(
     <Router hideNavBar>
@@ -32,6 +33,7 @@ const RouterComponent = () => {
       <Scene key="endpointmap" component={EndPointMap} title="Choose Location" panHandlers={null}/>
       <Scene key="buswaypoints" component={BusWayPoints} title="Choose Location" panHandlers={null}/>
       <Scene key="busdrivermain" component={BusDriverMain} title="Bus Driver Main" panHandlers={null}/>
+      <Scene key="taxidrivermain" component={TaxiDriverMain} title="Taxi Driver Main" panHandlers={null}/>
     </Router>
   );
 };

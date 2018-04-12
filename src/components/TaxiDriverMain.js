@@ -9,12 +9,10 @@ import { StyleSheet } from 'react-native';
 import SideBar from './SideBar';
 import { connect } from 'react-redux';
 import firebase from 'firebase';
-import { GetBusRoute, getBusList, loginUser,getCurrentLocation
+import { getCurrentLocation
 } from '../actions';
 
-class BusDriverMain extends Component {
-
-    
+class TaxiDriverMain extends Component {
   componentWillMount(){
     this.props.getCurrentLocation();
   }
@@ -36,10 +34,10 @@ class BusDriverMain extends Component {
         let longitude = pos.coords.longitude;
         if(this.state.workmode)
         {
-            firebase.database().ref('busdrivers/'+username).update({latitude:latitude,longitude:longitude});
+            firebase.database().ref('taxidrivers/'+username).update({latitude:latitude,longitude:longitude});
         }
         else{
-            firebase.database().ref('busdrivers/'+username).update({latitude:'',longitude:''});
+            firebase.database().ref('taxidrivers/'+username).update({latitude:'',longitude:''});
         }
                                                 
     }
@@ -112,7 +110,7 @@ class BusDriverMain extends Component {
           </Button>
         </Left>
         <Body>
-          <Text style={{color:'white'}}>Welcome BusDriver</Text>
+          <Text style={{color:'white'}}>Welcome TaxiDriver</Text>
         </Body>
 
       </Header>
@@ -129,12 +127,6 @@ class BusDriverMain extends Component {
             longitudeDelta: 0.999,
           }}
         >
-        <MapView.Polyline
-            lineCap="round"
-            lineJoin="round"
-            coordinates={this.props.muslimCoords}
-            strokeColor="blue"
-            strokeWidth={3}/>
         </MapView>
         </View>
             {this.renderButton()}
@@ -157,11 +149,11 @@ const styles = {
 
 
 const mapStateToProps = ({auth}) => {
-  const {muslimCoords,buslist,user,currentDriverBus,region} = auth;
-  return{muslimCoords,buslist,user,currentDriverBus,region};
+  const {user,currentDriverBus,region} = auth;
+  return{user,currentDriverBus,region};
 };
 
 
 export default connect(mapStateToProps, {
-  GetBusRoute,getBusList,loginUser,getCurrentLocation
-})(BusDriverMain);
+  getCurrentLocation
+})(TaxiDriverMain);
