@@ -1,45 +1,45 @@
-import React, {Component} from 'react';
-import { View,Form,Picker,Item,Icon,Text,Drawer,Container,Header,Left,Button,Body } from 'native-base';
+import React, { Component } from 'react';
+import { View, Form, Picker, Item, Icon, Text, Drawer, Container, Header, Left, Button, Body } from 'native-base';
 import MapView from 'react-native-maps';
 import RNGooglePlaces from 'react-native-google-places';
 import request from '../util/request';
 import Polyline from '@mapbox/polyline';
-import RNPolyline  from 'rn-maps-polyline'
+import RNPolyline from 'rn-maps-polyline'
 import { StyleSheet } from 'react-native';
 import SideBar from './SideBar';
 import { connect } from 'react-redux';
-import { GetBusRoute, getBusList
+import {
+  GetBusRoute, getBusList
 } from '../actions';
 
 class BusRoutes extends Component {
 
   constructor(props) {
     super(props);
-    this.props.getBusList();
     this.state = {
       selected2: undefined
     };
   }
-  componentWillMount(){
+  componentWillMount() {
     this.props.getBusList();
- }
+  }
   onValueChange2(value: string) {
     this.setState({
       selected2: value
     });
     this.props.GetBusRoute(value);
   }
-  updateDropdown(){
-      var items = this.props.buslist;
-      console.log(items);
-      const all_items = items.map((category, i) => {
-        console.log(category)
-        return (
-            <Picker.Item key={category} label={category} value={category} />
-          )
-       });
-       return all_items;
-     }
+  updateDropdown() {
+    var items = this.props.buslist;
+    console.log(items);
+    const all_items = items.map((category, i) => {
+      console.log(category)
+      return (
+        <Picker.Item key={category} label={category} value={category} />
+      )
+    });
+    return all_items;
+  }
 
   render() {
 
@@ -54,21 +54,23 @@ class BusRoutes extends Component {
         ref={(ref) => { this.drawer = ref; }}
         content={<SideBar navigator={this._navigator} />}
         onClose={() => closeDrawer()}
-        >
+      >
 
-      <Container>
-      <Header style={{backgroundColor:'black'}} androidStatusBarColor='black'>
-        <Left>
-          <Button transparent onPress={()=>openDrawer()}>
-            <Icon name='menu'  />
-          </Button>
-        </Left>
-        <Body>
-          <Text style={{color:'white'}}>Bus Routes</Text>
-        </Body>
+        <Container>
+          <View>
+            <Header style={{ backgroundColor: 'black' }} androidStatusBarColor='black'>
+              <Left>
+                <Button transparent onPress={() => openDrawer()}>
+                  <Icon name='menu' />
+                </Button>
+              </Left>
+              <Body>
+                <Text style={{ color: 'white' }}>Bus Routes</Text>
+              </Body>
 
-      </Header>
-      <Form>
+            </Header>
+          </View>
+          <Form>
             <Picker
               mode="dropdown"
               placeholder="Select One"
@@ -78,51 +80,51 @@ class BusRoutes extends Component {
               {this.updateDropdown()}
             </Picker>
           </Form>
-      <View style={styles.container}>
-        <MapView
-          provider={MapView.PROVIDER_GOOGLE}
-          style={styles.map}
-          showsUserLocation={true}
-          showsMyLocationButton={true}
-          initialRegion={{
-            latitude: 24.8615,
-            longitude: 67.0099,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        >
-        <MapView.Polyline
-            lineCap="round"
-            lineJoin="round"
-            coordinates={this.props.muslimCoords}
-            strokeColor="blue"
-            strokeWidth={3}/>
-        </MapView>
-        </View>
-      </Container>
+          <View style={styles.container}>
+            <MapView
+              provider={MapView.PROVIDER_GOOGLE}
+              style={styles.map}
+              showsUserLocation={true}
+              showsMyLocationButton={true}
+              initialRegion={{
+                latitude: 24.8615,
+                longitude: 67.0099,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+            >
+              <MapView.Polyline
+                lineCap="round"
+                lineJoin="round"
+                coordinates={this.props.muslimCoords}
+                strokeColor="blue"
+                strokeWidth={3} />
+            </MapView>
+          </View>
+        </Container>
       </Drawer>
     );
   }
 }
 
 const styles = {
-  container:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center'
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  map:{
+  map: {
     ...StyleSheet.absoluteFillObject
   }
 }
 
 
-const mapStateToProps = ({auth}) => {
-  const {muslimCoords,buslist} = auth;
-  return{muslimCoords,buslist};
+const mapStateToProps = ({ auth }) => {
+  const { muslimCoords, buslist } = auth;
+  return { muslimCoords, buslist };
 };
 
 
 export default connect(mapStateToProps, {
-  GetBusRoute,getBusList
+  GetBusRoute, getBusList
 })(BusRoutes);

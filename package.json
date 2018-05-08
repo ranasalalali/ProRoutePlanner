@@ -9,20 +9,23 @@
 	"dependencies": {
 		"@mapbox/polyline": "^0.2.0",
 		"firebase": "^4.6.2",
+		"js-graph-algorithms": "^1.0.18",
 		"lodash": "^4.17.4",
 		"native-base": "^2.3.1",
 		"react": "^16.0.0-alpha.12",
 		"react-addons-pure-render-mixin": "^15.6.2",
 		"react-native": "^0.46.4",
-		"react-native-google-places": "^2.4.2",
+		"react-native-google-places": "^2.5.0",
 		"react-native-map-clustering": "^1.2.8",
 		"react-native-maps": "^0.17.1",
-		"react-native-router-flux": "^3.43.0",
+		"react-native-queue": "^1.2.1",
+		"react-native-router-flux": "^4.0.0-beta.28",
 		"react-redux": "^5.0.6",
 		"redux": "^3.7.2",
 		"redux-thunk": "^2.2.0",
 		"rn-maps-polyline": "^2.0.0",
-		"superagent": "^3.8.1"
+		"superagent": "^3.8.1",
+		"timers": "^0.1.1"
 	},
 	"devDependencies": {
 		"babel-jest": "21.2.0",

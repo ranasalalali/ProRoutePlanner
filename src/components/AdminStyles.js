@@ -1,65 +1,65 @@
 import { Dimensions } from "react-native";
 var width = Dimensions.get("window").width; //full width
 const styles = {
-    searchBox:{
-        top:20,
-        position:"absolute",
-        width:width
+    searchBox: {
+        top: 20,
+        position: "absolute",
+        width: width
     },
-    inputWrapper:{
-        marginLeft:15,
-        marginRight:10,
-        marginTop:10,
-        marginBottom:0,
-        backgroundColor:"#fff",
-        opacity:0.9,
-        borderRadius:7
+    inputWrapper: {
+        marginLeft: 15,
+        marginRight: 10,
+        marginTop: 10,
+        marginBottom: 0,
+        backgroundColor: "#fff",
+        opacity: 0.9,
+        borderRadius: 7
     },
-    secondInputWrapper:{
-        marginLeft:15,
-        marginRight:10,
-        marginTop:0,
-        backgroundColor:"#fff",
-        opacity:0.9,
-        borderRadius:7
+    secondInputWrapper: {
+        marginLeft: 15,
+        marginRight: 10,
+        marginTop: 0,
+        backgroundColor: "#fff",
+        opacity: 0.9,
+        borderRadius: 7
     },
-    inputSearch:{
-        fontSize:14
+    inputSearch: {
+        fontSize: 14
     },
-    label:{
-        fontSize:10,
+    label: {
+        fontSize: 10,
         fontStyle: "italic",
-        marginLeft:10,
-        marginTop:10,
-        marginBottom:0
+        marginLeft: 10,
+        marginTop: 10,
+        marginBottom: 0
     },
-    searchResultsWrapper:{
-        top:200,
-        position:"absolute",
-        width:width,
-        height:1000,
-        backgroundColor:"#fff",
-        opacity:0.9
+    searchResultsWrapper: {
+        top: 200,
+        position: "absolute",
+        width: width,
+        height: 1000,
+        backgroundColor: "#fff",
+        opacity: 0.9
     },
-    primaryText:{
+    primaryText: {
         fontWeight: "bold",
-        color:"#373737"
+        color: "#373737"
     },
-    secondaryText:{
+    secondaryText: {
         fontStyle: "italic",
-        color:"#7D7D7D",
+        color: "#7D7D7D",
     },
-    leftContainer:{
+    leftContainer: {
         flexWrap: "wrap",
         alignItems: "flex-start",
-        borderLeftColor:"#7D7D7D",
+        borderLeftColor: "#7D7D7D",
     },
-    leftIcon:{
-        fontSize:20,
-        color:"#7D7D7D",
+    leftIcon: {
+        fontSize: 20,
+        color: "#7D7D7D",
     },
-    distance:{
-        fontSize:12,
+    distance: {
+        fontSize: 12,
     }
 };
 

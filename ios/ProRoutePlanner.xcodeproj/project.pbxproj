@@ -51,6 +51,9 @@
 		7870433A03434724955010E7 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 365359D7D7F34E95889F9F6F /* Zocial.ttf */; };
 		BEDC16B586044E3B84326346 /* libAirMaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE70AD7278F443069CCA8179 /* libAirMaps.a */; };
 		CFB17C56E26A4331AB0A3122 /* libRNFirebasePhoneAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E99C12A2FD6844FDAFB8BA5E /* libRNFirebasePhoneAuth.a */; };
+		B53F0D2A79744ABCA4E23E96 /* libRealmReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76DB6CBE0BAD461BBD44C967 /* libRealmReact.a */; };
+		FF0B689466E44F34AFC25B26 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 30247C50F8D0443EABCABDB2 /* libc++.tbd */; };
+		2C7286CF13984D23BB7C9D15 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 79EC79A652EA41A1898C9427 /* libz.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -296,6 +299,10 @@
 		CE70AD7278F443069CCA8179 /* libAirMaps.a */ = {isa = PBXFileReference; name = "libAirMaps.a"; path = "libAirMaps.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		DAB4FD7CB9D44D7790BF449E /* RNFirebasePhoneAuth.xcodeproj */ = {isa = PBXFileReference; name = "RNFirebasePhoneAuth.xcodeproj"; path = "../node_modules/react-native-firebase-phone-auth/ios/RNFirebasePhoneAuth.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		E99C12A2FD6844FDAFB8BA5E /* libRNFirebasePhoneAuth.a */ = {isa = PBXFileReference; name = "libRNFirebasePhoneAuth.a"; path = "libRNFirebasePhoneAuth.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		E988196182A54A91B2C948AC /* RealmReact.xcodeproj */ = {isa = PBXFileReference; name = "RealmReact.xcodeproj"; path = "../node_modules/realm/react-native/ios/RealmReact.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		76DB6CBE0BAD461BBD44C967 /* libRealmReact.a */ = {isa = PBXFileReference; name = "libRealmReact.a"; path = "libRealmReact.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		30247C50F8D0443EABCABDB2 /* libc++.tbd */ = {isa = PBXFileReference; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = sourcecode.text-based-dylib-definition; explicitFileType = undefined; includeInIndex = 0; };
+		79EC79A652EA41A1898C9427 /* libz.tbd */ = {isa = PBXFileReference; name = "libz.tbd"; path = "usr/lib/libz.tbd"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = sourcecode.text-based-dylib-definition; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -327,6 +334,9 @@
 				9D6F763DA9CF415881C6C10F /* libRNGooglePlaces.a in Frameworks */,
 				BEDC16B586044E3B84326346 /* libAirMaps.a in Frameworks */,
 				CFB17C56E26A4331AB0A3122 /* libRNFirebasePhoneAuth.a in Frameworks */,
+				B53F0D2A79744ABCA4E23E96 /* libRealmReact.a in Frameworks */,
+				FF0B689466E44F34AFC25B26 /* libc++.tbd in Frameworks */,
+				2C7286CF13984D23BB7C9D15 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -498,6 +508,7 @@
 				A5E5545642C34FF09D4F5405 /* RNGooglePlaces.xcodeproj */,
 				384AFEADF7ED4C27972FB9B3 /* AirMaps.xcodeproj */,
 				DAB4FD7CB9D44D7790BF449E /* RNFirebasePhoneAuth.xcodeproj */,
+				E988196182A54A91B2C948AC /* RealmReact.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -519,6 +530,7 @@
 				00E356EF1AD99517003FC87E /* ProRoutePlannerTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				CEE2ABE57D964E5AAFAC3BB2 /* Resources */,
+				7F3435023345464098F49F3F /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -561,6 +573,16 @@
 				365359D7D7F34E95889F9F6F /* Zocial.ttf */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+			path = "";
+		};
+		7F3435023345464098F49F3F /* Frameworks */ = {
+			isa = "PBXGroup";
+			children = (
+				30247C50F8D0443EABCABDB2 /* libc++.tbd */,
+				79EC79A652EA41A1898C9427 /* libz.tbd */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 			path = "";
 		};
@@ -1081,12 +1103,14 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 					"$(SRCROOT)\..\node_modules\react-native-maps\lib\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-firebase-phone-auth\ios",
+					"$(SRCROOT)\..\node_modules\realm\src/**",
 				);
 			};
 			name = Debug;
@@ -1110,12 +1134,14 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 					"$(SRCROOT)\..\node_modules\react-native-maps\lib\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-firebase-phone-auth\ios",
+					"$(SRCROOT)\..\node_modules\realm\src/**",
 				);
 			};
 			name = Release;
@@ -1140,6 +1166,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 					"$(SRCROOT)\..\node_modules\react-native-maps\lib\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-firebase-phone-auth\ios",
+					"$(SRCROOT)\..\node_modules\realm\src/**",
 				);
 			};
 			name = Debug;
@@ -1163,6 +1190,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 					"$(SRCROOT)\..\node_modules\react-native-maps\lib\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-firebase-phone-auth\ios",
+					"$(SRCROOT)\..\node_modules\realm\src/**",
 				);
 			};
 			name = Release;
@@ -1195,12 +1223,14 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 					"$(SRCROOT)\..\node_modules\react-native-maps\lib\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-firebase-phone-auth\ios",
+					"$(SRCROOT)\..\node_modules\realm\src/**",
 				);
 			};
 			name = Debug;
@@ -1233,12 +1263,14 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)\..\node_modules\react-native-google-places\ios",
 					"$(SRCROOT)\..\node_modules\react-native-maps\lib\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-firebase-phone-auth\ios",
+					"$(SRCROOT)\..\node_modules\realm\src/**",
 				);
 			};
 			name = Release;
@@ -1266,6 +1298,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 			};
 			name = Debug;
@@ -1290,6 +1323,7 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",

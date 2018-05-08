@@ -1,93 +1,108 @@
-import React, {Component} from 'react';
-import { View,Form,Picker,Item,Icon,Text,Drawer,Container,Header,Left,Footer,Button,Body } from 'native-base';
+import React, { Component } from 'react';
+import { View, Form, Picker, Item, Icon, Text, Drawer, Container, Header, Left, Footer, Button, Body } from 'native-base';
 import MapView from 'react-native-maps';
 import RNGooglePlaces from 'react-native-google-places';
 import request from '../util/request';
 import Polyline from '@mapbox/polyline';
-import RNPolyline  from 'rn-maps-polyline'
+import RNPolyline from 'rn-maps-polyline'
 import { StyleSheet } from 'react-native';
 import SideBar from './SideBar';
 import { connect } from 'react-redux';
 import firebase from 'firebase';
-import { getCurrentLocation
+import {
+  getCurrentLocation
 } from '../actions';
 
 class TaxiDriverMain extends Component {
-  componentWillMount(){
-    this.props.getCurrentLocation();
-  }
+
   constructor(props) {
     super(props);
+    var timer;
     this.state = {
+      intervalid:null,
       selected2: undefined,
-      workmode:true,
-      coordinates:{}
+      workmode: true,
+      coordinates: {},
+      user: this.props.user
     };
   }
-
-    success(pos) {
-        this.setState({
-            coordinates:pos.coords
-        })
-        let username = this.props.user;
-        let latitude = pos.coords.latitude;
-        let longitude = pos.coords.longitude;
-        if(this.state.workmode)
-        {
-            firebase.database().ref('taxidrivers/'+username).update({latitude:latitude,longitude:longitude});
-        }
-        else{
-            firebase.database().ref('taxidrivers/'+username).update({latitude:'',longitude:''});
-        }
-                                                
-    }
-    getlocation(){
-        var options = {
-            enableHighAccuracy: false, timeout: 5000, maximumAge: 0
-        };
-        function error(err) {
-            console.warn(`ERROR(${err.code}): ${err.message}`);
-        }
-        navigator.geolocation.getCurrentPosition(this.success.bind(this), error, options);        
-    }
-
-  onButtonPress(){
-    if(this.state.workmode)
-    {
-        this.setState({
-            workmode:false,
-            lat:'',
-            long:''
-        })
-    }
-    else
-    this.setState({
-        workmode:true
-    })
-    
+  componentWillMount() {
+    this.state.intervalid = setInterval(() => {
+      this.getlocation()
+    }, 5000)
+  }
+  componentWillUnmount(){
+    clearInterval(this.state.intervalid)
   }
 
-  renderButton(){
-    if(this.state.workmode){
-        return(
-            <Button full dark onPress={this.onButtonPress.bind(this)}>
-                <Text style={{color:'white'}}>Work Mode: ON</Text>
-            </Button>
-        )
+  clearinterval() {
+    clearInterval(timer);
+  }
+  success(pos) {
+    this.setState({
+      coordinates: pos.coords
+    })
+    if (this.props.user === this.state.user) {
+      let username = this.props.user;
+      let latitude = pos.coords.latitude;
+      let longitude = pos.coords.longitude;
+      if (this.state.workmode) {
+        firebase.database().ref('taxidrivers/' + username).update({ latitude: latitude, longitude: longitude });
+      }
+      else {
+        firebase.database().ref('taxidrivers/' + username).update({ latitude: 0, longitude: 0 });
+      }
+    }
+    else if (this.props.user === '') {
+      let olduser = this.state.user;
+      firebase.database().ref('taxidrivers/' + olduser).update({ latitude: 0, longitude: 0 });
+    }
+
+  }
+  getlocation() {
+    var options = {
+      enableHighAccuracy: false, timeout: 5000, maximumAge: 0
+    };
+    function error(err) {
+      console.warn(`ERROR(${err.code}): ${err.message}`);
+    }
+    navigator.geolocation.getCurrentPosition(this.success.bind(this), error, options);
+  }
+
+  onButtonPress() {
+    if (this.state.workmode) {
+      this.setState({
+        workmode: false
+      })
     }
     else
-        return (
-        <Button full light onPress={this.onButtonPress.bind(this)}>
-          <Text style={{color:'black'}}>Work Mode: OFF</Text>
+      this.setState({
+        workmode: true
+      })
+
+  }
+
+  renderButton() {
+    if (this.state.workmode) {
+      return (
+        <Button full dark onPress={this.onButtonPress.bind(this)}>
+          <Text style={{ color: 'white' }}>Work Mode: ON</Text>
         </Button>
-        )
-    
+      )
+    }
+    else
+      return (
+        <Button full light onPress={this.onButtonPress.bind(this)}>
+          <Text style={{ color: 'black' }}>Work Mode: OFF</Text>
+        </Button>
+      )
+
   }
 
   render() {
 
 
-    this.state.coordinates = setInterval(function(){this.getlocation.bind(this)}, 5000);
+    //this.state.coordinates = setInterval(this.getlocation.bind(this), 5000);
 
     closeDrawer = () => {
       this.drawer._root.close()
@@ -95,62 +110,67 @@ class TaxiDriverMain extends Component {
     openDrawer = () => {
       this.drawer._root.open()
     };
+    const clear = { clearinterval: this.clearinterval.bind(this) }
     return (
       <Drawer
+
         ref={(ref) => { this.drawer = ref; }}
-        content={<SideBar navigator={this._navigator} />}
+        content={<SideBar clear={clear} navigator={this._navigator} />}
         onClose={() => closeDrawer()}
-        >
+      >
 
-      <Container>
-      <Header style={{backgroundColor:'black'}} androidStatusBarColor='black'>
-        <Left>
-          <Button transparent onPress={()=>openDrawer()}>
-            <Icon name='menu'  />
-          </Button>
-        </Left>
-        <Body>
-          <Text style={{color:'white'}}>Welcome TaxiDriver</Text>
-        </Body>
-
-      </Header>
-      <View style={styles.container}>
-        <MapView
-          provider={MapView.PROVIDER_GOOGLE}
-          style={styles.map}
-          showsUserLocation={true}
-          showsMyLocationButton={true}
-          initialRegion={{
-            latitude: 24.8615,
-            longitude: 67.0099,
-            latitudeDelta: 0.1,
-            longitudeDelta: 0.999,
-          }}
-        >
-        </MapView>
-        </View>
+        <Container>
+          <View>
+            <Header style={{ backgroundColor: 'black' }} androidStatusBarColor='black'>
+              <Left>
+                <Button transparent onPress={() => openDrawer()}>
+                  <Icon name='menu' />
+                </Button>
+              </Left>
+              <Body>
+                <Text style={{ color: 'white' }}>Welcome TaxiDriver</Text>
+              </Body>
+            </Header>
+          </View>
+          <View style={styles.container}>
+            <MapView
+              provider={MapView.PROVIDER_GOOGLE}
+              style={styles.map}
+              showsUserLocation={true}
+              showsMyLocationButton={true}
+              initialRegion={{
+                latitude: 24.8615,
+                longitude: 67.0099,
+                latitudeDelta: 0.1,
+                longitudeDelta: 0.999,
+              }}
+            >
+            </MapView>
+          </View>
+          <View>
             {this.renderButton()}
-      </Container>
+          </View>
+        </Container>
       </Drawer>
     );
   }
 }
 
 const styles = {
-  container:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center'
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  map:{
+  map: {
     ...StyleSheet.absoluteFillObject
   }
 }
 
 
-const mapStateToProps = ({auth}) => {
-  const {user,currentDriverBus,region} = auth;
-  return{user,currentDriverBus,region};
+const mapStateToProps = ({ auth }) => {
+  const { user, currentDriverBus, region } = auth;
+  return { user, currentDriverBus, region };
 };
 
 
