@@ -29,7 +29,8 @@ export const MapContainer = ({ region,
   origin_walk_coords,
   dest_walk_coords,
   bus_stop_markers,
-  coords2 }) => {
+  coords2,
+  loading_map }) => {
 
 
   function busstopmarkers() {
@@ -137,7 +138,7 @@ export const MapContainer = ({ region,
         selectedDestinationAddress={selectedDestinationAddress}
       />
       {(resultTypes.Source || resultTypes.Destination) &&
-        <SearchResults predictions={predictions} getSelectedAddress={getSelectedAddress} />
+        <SearchResults predictions={predictions} getSelectedAddress={getSelectedAddress} loading_map={loading_map} />
       }
     </KeyboardAvoidingView>
   )

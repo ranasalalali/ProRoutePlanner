@@ -4,7 +4,7 @@ import { View } from "native-base";
 
 import styles from "./fareStyle.js";
 
-export const Fare = ({ fare, ETA, ETAG }) => {
+export const Fare = ({ fare, ETA, ETAG, map_loading	 }) => {	
 	return (
 		<View style={styles.fareContainer}>
 			<Text>

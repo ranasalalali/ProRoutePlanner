@@ -36,7 +36,6 @@ export default class Sidebar extends Component {
 							</Right>
 						</ListItem>
 						<ListItem onPress={() => {
-							Actions.pop()
 							Actions.busroutes()
 						}}>
 							<Left>
@@ -50,7 +49,6 @@ export default class Sidebar extends Component {
 							</Right>
 						</ListItem>
 						<ListItem onPress={() => {
-							Actions.pop()
 							Actions.rickshawroutes()
 						}}>
 							<Left>

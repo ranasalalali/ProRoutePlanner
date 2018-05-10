@@ -86,7 +86,9 @@ const INITIAL_STATE = {
   dest_walk_coords: [],
   origin_walk_coords: [],
 
-  bus_stop_markers: []
+  bus_stop_markers: [],
+
+  loading_map: false
 
 };
 
@@ -98,11 +100,11 @@ const LONGITUDE_DELTA = ASPECT_RATIO * LATITUDE_DELTA;
 
 
 export default (state = INITIAL_STATE, action) => {
-  console.log(action);
+  ///console.log(action);
   switch (action.type) {
 
     case 'LOGOUT':
-      return { ...state, ...INITIAL_STATE, user: '' };
+      return { ...state, loading:false, password:'' };
 
     case GET_LIVE_RICKSHAW_COORDS:
       return { ...state, liverickshawcoords: action.payload };
@@ -125,7 +127,7 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, loading: true, error: '' };
 
     case LOGIN_USER_SUCCESS:
-      return { ...state, user: action.payload };
+      return { ...state, user: action.payload, loading: false };
 
     case SET_CURRENT_DRIVER_BUS:
       return { ...state, currentdriverbus: action.payload };
@@ -321,6 +323,12 @@ export default (state = INITIAL_STATE, action) => {
 
     case "BUS_STOP_MARKERS":
       return { ...state, bus_stop_markers: action.payload }
+
+    case "LOADING_MAP":
+      return { ...state, loading_map:true }
+
+    case "LOADING_MAP_COMPLETE":
+      return { ...state, loading_map:false }
 
     default:
       return state;

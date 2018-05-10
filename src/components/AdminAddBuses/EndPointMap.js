@@ -32,7 +32,7 @@ class EndPointMap extends Component {
       Alert.alert('Choose a Location');
     }
     else {
-      console.log(this.state.place);
+      //console.log(this.state.place);
       this.props.addBusEndPoint(this.state.place);
       this.props.getWaypointList();
     }

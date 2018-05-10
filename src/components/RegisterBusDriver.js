@@ -74,7 +74,7 @@ class RegisterBusDriver extends Component {
       let password = this.state.password;
       let bus = this.state.BusName;
       let license = this.state.license;
-      console.log(this.state.email);
+      //console.log(this.state.email);
       firebase.database().ref('busdrivers/')
         .once('value', function (snapshot) {
           if (!snapshot.hasChild(username)) {
@@ -181,9 +181,9 @@ class RegisterBusDriver extends Component {
   }
   updateDropdown() {
     var items = this.props.buslist;
-    console.log(items);
+    //console.log(items);
     const all_items = items.map((category, i) => {
-      console.log(category)
+      //console.log(category)
       return (
         <Picker.Item key={category} label={category} value={category} />
       )

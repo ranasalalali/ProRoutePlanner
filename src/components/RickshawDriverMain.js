@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { BackHandler, ToastAndroid } from 'react-native';
 import { View, Form, Picker, Item, Icon, Text, Drawer, Container, Header, Left, Footer, Button, Body } from 'native-base';
 import MapView from 'react-native-maps';
 import RNGooglePlaces from 'react-native-google-places';
@@ -15,9 +16,13 @@ import {
 
 class RickshawDriverMain extends Component {
 
-
+  handleBackButton() {
+    ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+    return true;
+  }
   componentWillMount() {
     this.props.getCurrentLocation();
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     this.state.intervalid = setInterval(this.getlocation.bind(this), 5000);
   }
   constructor(props) {
@@ -31,6 +36,8 @@ class RickshawDriverMain extends Component {
     };
   }
   componentWillUnmount(){
+    let username = this.props.user;
+    firebase.database().ref('rickshawdrivers/' + username).update({ latitude: 0, longitude: 0 });
     clearInterval(this.state.intervalid)
   }
 
@@ -38,6 +45,7 @@ class RickshawDriverMain extends Component {
     this.setState({
       coordinates: pos.coords
     })
+    //console.log(username)
     let username = this.props.user;
     let latitude = pos.coords.latitude;
     let longitude = pos.coords.longitude;
@@ -49,10 +57,6 @@ class RickshawDriverMain extends Component {
         firebase.database().ref('rickshawdrivers/' + username).update({ latitude: 0, longitude: 0 });
       }
     }
-    else if (this.props.user === '') {
-      let olduser = this.state.user;
-      firebase.database().ref('rickshawdrivers/' + olduser).update({ latitude: 0, longitude: 0 });
-    }
 
   }
   getlocation() {
@@ -60,7 +64,7 @@ class RickshawDriverMain extends Component {
       enableHighAccuracy: false, timeout: 5000, maximumAge: 0
     };
     function error(err) {
-      console.warn(`ERROR(${err.code}): ${err.message}`);
+      //console.warn(`ERROR(${err.code}): ${err.message}`);
     }
     navigator.geolocation.getCurrentPosition(this.success.bind(this), error, options);
   }

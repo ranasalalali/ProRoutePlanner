@@ -62,7 +62,7 @@ export const getLiveBusCoords = () => {
               var longitude = snapshot.child("longitude").val();
               dic = { title: bus, coordinates: { latitude: latitude, longitude: longitude } }
               Markers.push(dic);
-              // console.log(Markers);
+              //console.log(Markers);
             })
         });
       }).then(() => {
@@ -88,7 +88,7 @@ export const getLiveRickshawCoords = () => {
               var longitude = snapshot.child("longitude").val();
               dic = { title: Rickshaw, coordinates: { latitude: latitude, longitude: longitude } }
               Markers.push(dic);
-              // console.log(Markers);
+              // ////console.log(Markers);
             })
         });
       }).then(() => {
@@ -115,7 +115,7 @@ export const getLiveTaxiCoords = () => {
               var longitude = snapshot.child("longitude").val();
               dict = { title: name, phone: number, coordinates: { latitude: latitude, longitude: longitude } }
               TaxiMarkers.push(dict);
-              // console.log(Markers);
+              // ////console.log(Markers);
             })
         })
       }).then(() => {
@@ -136,122 +136,193 @@ export const logoutUser = () => {
 export const loginUser = ({ email, password }) => {
   return (dispatch) => {
     dispatch({ type: LOGIN_USER });
-    var db = firebase.database();
-    db.ref('users/')
-      .once('value', function (snapshot) {
-        if (snapshot.hasChild(email)) {
-          db.ref("/users/" + email)
-            .once('value').then(function (snapshot) {
-              var places = snapshot.child("password").val();
-              dispatch({
-                type: LOGIN_USER_SUCCESS,
-                payload: email
-              });
-              Actions.pop();
-              Actions.userhome();
-            })
-        }
-        else
-          db.ref('busdrivers/')
-            .once('value', function (snapshot) {
-              if (snapshot.hasChild(email)) {
-                db.ref("/busdrivers/" + email)
-                  .once('value').then(function (snapshot) {
-                    var places = snapshot.child("Password").val();
-                    var busname = snapshot.child("Bus").val();
-                    db.ref('/buses/' + busname).once("value")
-                      .then(function (snapshot) {
-                        console.log(snapshot.val());
-                        var startpoint = snapshot.child("Startpoint").val();
-                        var endpoint = snapshot.child("Endpoint").val();
-                        var waypoint = snapshot.child("Waypoint").val();
-                        request.get("https://maps.googleapis.com/maps/api/directions/json")
-                          .query({
-                            origin: startpoint,
-                            destination: endpoint,
-                            waypoints: waypoint,
-                            mode: "driving",
-                            key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
-                          })
-                          .finish((error, res) => {
-                            console.log(res);
-                            let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
-                            let coords = points.map((point, index) => {
-                              return {
-                                latitude: point[1],
-                                longitude: point[0],
-                              }
-                            });
-                            dispatch({
-                              type: GET_MUSLIM_COORDS,
-                              payload: points
-                            });
-                          })
-                      })
-                    dispatch({
-                      type: LOGIN_USER_SUCCESS,
-                      payload: email
-                    });
-                    Actions.pop();
-                    Actions.busdrivermain();
+    if (email.includes(".") || email.includes("#") || email.includes("$") || email.includes("[") || email.includes("]")) {
+      dispatch({ type: LOGIN_USER_FAIL })
+    }
+    else {
+      var db = firebase.database();
+      db.ref('users/')
+        .once('value', function (snapshot) {
+          if (snapshot.hasChild(email)) {
+            db.ref("/users/" + email)
+              .once('value').then(function (snapshot) {
+                var pass = snapshot.child("password").val();
+                if (pass !== password) {
+                  dispatch({
+                    type: LOGIN_USER_FAIL
                   })
-              }
-              else
-                db.ref('taxidrivers/')
-                  .once('value', function (snapshot) {
-                    console.log("CheckTaxiDrivers");
-                    if (snapshot.hasChild(email)) {
-                      db.ref("/taxidrivers/" + email)
-                        .once('value').then(function (snapshot) {
-                          var places = snapshot.child("password").val();
-                          dispatch({
-                            type: LOGIN_USER_SUCCESS,
-                            payload: email
-                          });
-                          Actions.pop();
-                          Actions.taxidrivermain();
+                }
+                else {
+                  dispatch({
+                    type: LOGIN_USER_SUCCESS,
+                    payload: email
+                  });
+                  Actions.pop();
+                  Actions.userhome();
+                }
+              })
+          }
+          else
+            db.ref('busdrivers/')
+              .once('value', function (snapshot) {
+                if (snapshot.hasChild(email)) {
+                  db.ref("/busdrivers/" + email)
+                    .once('value').then(function (snapshot) {
+                      var pass = snapshot.child("Password").val();
+                      var busname = snapshot.child("Bus").val();
+                      if (password !== pass) {
+                        dispatch({
+                          type: LOGIN_USER_FAIL
                         })
-                    }
-                    else
-                      db.ref('rickshawdrivers/')
-                        .once('value', function (snapshot) {
-                          console.log("CheckRickshawDrivers");
-                          if (snapshot.hasChild(email)) {
-                            db.ref("/rickshawdrivers/" + email)
-                              .once('value').then(function (snapshot) {
-                                var places = snapshot.child("password").val();
-                                dispatch({
-                                  type: LOGIN_USER_SUCCESS,
-                                  payload: email
+                      }
+                      else {
+                        db.ref('/buses/' + busname).once("value")
+                          .then(function (snapshot) {
+                            var startpoint = snapshot.child("Startpoint").val();
+                            var endpoint = snapshot.child("Endpoint").val();
+                            var waypoint = snapshot.child("Waypoint").val();
+                            request.get("https://maps.googleapis.com/maps/api/directions/json")
+                              .query({
+                                origin: startpoint,
+                                destination: endpoint,
+                                waypoints: waypoint,
+                                mode: "driving",
+                                key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
+                              })
+                              .finish((error, res) => {
+                                ////console.log(res);
+                                let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
+                                let coords = points.map((point, index) => {
+                                  return {
+                                    latitude: point[1],
+                                    longitude: point[0],
+                                  }
                                 });
-                                Actions.pop();
-                                Actions.rickshawdrivermain();
+                                dispatch({
+                                  type: GET_MUSLIM_COORDS,
+                                  payload: points
+                                });
                               })
-                          }
-                          else
-                            db.ref('admins/')
-                              .once('value', function (snapshot) {
-                                console.log("CheckAdmins");
-                                if (snapshot.hasChild(email)) {
-                                  db.ref("/admins/" + email)
-                                    .once('value').then(function (snapshot) {
-                                      var places = snapshot.child("password").val();
-                                      dispatch({
-                                        type: LOGIN_USER_SUCCESS,
-                                        payload: email
-                                      });
-                                      Actions.pop();
-                                      Actions.adminmain();
-                                    })
-                                }
-                                else {
-                                  loginUserFail(dispatch);
-                                }
+                          })
+                        dispatch({
+                          type: LOGIN_USER_SUCCESS,
+                          payload: email
+                        });
+                        Actions.pop();
+                        Actions.busdrivermain();
+                      }
+                    })
+                }
+                else
+                  db.ref('taxidrivers/')
+                    .once('value', function (snapshot) {
+                      ////console.log("CheckTaxiDrivers");
+                      if (snapshot.hasChild(email)) {
+                        db.ref("/taxidrivers/" + email)
+                          .once('value').then(function (snapshot) {
+                            var pass = snapshot.child("Password").val();
+                            if (pass !== password) {
+                              dispatch({
+                                type: LOGIN_USER_FAIL
                               })
-                        })
-                  })
-            })
-      })
+                            }
+                            else {
+                              dispatch({
+                                type: LOGIN_USER_SUCCESS,
+                                payload: email
+                              });
+                              Actions.pop();
+                              Actions.taxidrivermain();
+                            }
+                          })
+                      }
+                      else
+                        db.ref('rickshawdrivers/')
+                          .once('value', function (snapshot) {
+                            ////console.log("CheckRickshawDrivers");
+                            if (snapshot.hasChild(email)) {
+                              db.ref("/rickshawdrivers/" + email)
+                                .once('value').then(function (snapshot) {
+                                  var pass = snapshot.child("Password").val();
+                                  var rickshaw = snapshot.child("Rickshaw").val();
+                                  if (pass !== password) {
+                                    dispatch({
+                                      type: LOGIN_USER_FAIL
+                                    });
+                                  }
+                                  else {
+                                    firebase.database().ref('/rickshaws/' + rickshaw).once("value")
+                                      .then(function (snapshot) {
+                                        ////console.log(snapshot.val());
+                                        var startpoint = snapshot.child("Startpoint").val();
+                                        var endpoint = snapshot.child("Endpoint").val();
+                                        var waypoint = snapshot.child("Waypoint").val();
+                                        request.get("https://maps.googleapis.com/maps/api/directions/json")
+                                          .query({
+                                            origin: startpoint,
+                                            destination: endpoint,
+                                            waypoints: waypoint,
+                                            mode: "driving",
+                                            key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
+                                          })
+                                          .finish((error, res) => {
+                                            ////console.log(res);
+                                            let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
+                                            let coords = points.map((point, index) => {
+                                              return {
+                                                latitude: point[1],
+                                                longitude: point[0],
+                                              }
+                                            });
+                                            dispatch({
+                                              type: "GET_RICKSHAW_COORDS",
+                                              payload: points
+                                            });
+                                          })
+                                      })
+                                    dispatch({
+                                      type: LOGIN_USER_SUCCESS,
+                                      payload: email
+                                    });
+                                    Actions.pop();
+                                    Actions.rickshawdrivermain();
+                                  }
+
+                                })
+                            }
+                            else
+                              db.ref('admins/')
+                                .once('value', function (snapshot) {
+                                  ////console.log("CheckAdmins");
+                                  if (snapshot.hasChild(email)) {
+                                    db.ref("/admins/" + email)
+                                      .once('value').then(function (snapshot) {
+                                        var pass = snapshot.child("password").val();
+                                        if (pass !== password) {
+                                          dispatch({
+                                            type: LOGIN_USER_FAIL
+                                          })
+                                        }
+                                        else {
+                                          dispatch({
+                                            type: LOGIN_USER_SUCCESS,
+                                            payload: email
+                                          });
+                                          Actions.pop();
+                                          Actions.adminmain();
+                                        }
+                                      })
+                                  }
+                                  else {
+                                    loginUserFail(dispatch);
+                                  }
+                                })
+                          })
+                    })
+              })
+        })
+    }
+
   };
 };
 
@@ -272,13 +343,20 @@ const loginUserFail = (dispatch) => {
 //USERHOMEMAP
 
 export const getCurrentLocation = () => {
+  
   return (dispatch) => {
+    dispatch({
+      type:"LOADING_MAP"
+    })
     navigator.geolocation.getCurrentPosition(
       (position) => {
         dispatch({
           type: GET_CURRENT_LOCATION,
           payload: position
         });
+        dispatch({
+          type:"LOADING_MAP_COMPLETE"
+        })
       },
       (error) => console.log(error.message),
       { enableHighAccuracy: false, timeout: 300000, maximumAge: 0 }
@@ -386,6 +464,9 @@ export const getSelectedAddress = (payload, current) => {
         })
       })
       .then(() => {
+        dispatch({
+          type:"LOADING_MAP"
+        })
         if (store().auth.selectedSourceAddress.selectedSource && store().auth.selectedDestinationAddress.selectedDestination) {
           let origin = store().auth.selectedSourceAddress.selectedSource.latitude + "," + store().auth.selectedSourceAddress.selectedSource.longitude;
           let destination = store().auth.selectedDestinationAddress.selectedDestination.latitude + "," + store().auth.selectedDestinationAddress.selectedDestination.longitude;
@@ -400,10 +481,10 @@ export const getSelectedAddress = (payload, current) => {
               key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
             })
             .finish((error, res) => {
-              console.log(res.body)
+              //console.log(res.body)
               let lat = store().auth.selectedSourceAddress.selectedSource.latitude;
               let long = store().auth.selectedSourceAddress.selectedSource.longitude;
-              //console.log(lat);
+              ////console.log(lat);
               var ETAG = 0
               res.body.routes[0].legs.forEach(function (key) {
                 ETAG = ETAG + key.duration.value;
@@ -425,13 +506,13 @@ export const getSelectedAddress = (payload, current) => {
                 })
                 dispatch({
                   type: "GET_DIRECTION_POLYLINE_2",
-                  payload: pointsb           
+                  payload: pointsb
                 });
               }
               dispatch({
                 type: GET_DIRECTION_POLYLINE,
                 payload: points,
-                ETAG:ETAG/60 + 0.0
+                ETAG: ETAG / 60 + 0.0
               });
               dispatch({
                 type: GET_CHANGED_REGION,
@@ -462,7 +543,7 @@ export const getSelectedAddress = (payload, current) => {
                     type: GET_FARE,
                     payload: fare
                   })
-                  console.log("fare")
+                  //console.log("fare")
                   var origindist = 100000
                   var destdist = 100000
                   var originplace = ''
@@ -477,13 +558,13 @@ export const getSelectedAddress = (payload, current) => {
                       })
                       .finish((error, res) => {
                         if (res.body.rows[0].elements[0].distance.value <= origindist) {
-                          console.log("Origin")
+                          //console.log("Origin")
                           origindist = res.body.rows[0].elements[0].distance.value
-                          console.log(origindist)
+                          //console.log(origindist)
                           originplace = place
-                          console.log(originplace)
+                          //console.log(originplace)
                         }
-                        //console.log(res.body)
+                        ////console.log(res.body)
                       })
                     request.get("https://maps.googleapis.com/maps/api/distancematrix/json")
                       .query({
@@ -494,22 +575,22 @@ export const getSelectedAddress = (payload, current) => {
                       })
                       .finish((error, res) => {
                         if (res.body.rows[0].elements[0].distance.value <= destdist) {
-                          console.log("Destination")
+                          //console.log("Destination")
                           destdist = res.body.rows[0].elements[0].distance.value
-                          console.log(destdist)
+                          //console.log(destdist)
                           destplace = place
-                          console.log(destplace)
+                          //console.log(destplace)
                         }
-                        //console.log(res.body)
+                        ////console.log(res.body)
                       })
                   })
                   setTimeout(() => {
-                    console.log("Dispatching")
+                    //console.log("Dispatching")
                     dispatch({
                       type: "NEAREST_STOPS",
                       payload: { originplace, destplace }
                     })
-                    console.log("BFS RUNNING")
+                    //console.log("BFS RUNNING")
                     //g.bfs(originplace);
                     var waypoint = g.bfs(originplace, destplace);
 
@@ -522,9 +603,19 @@ export const getSelectedAddress = (payload, current) => {
 
                       Markers = new Array();
                       waypoint_list = waypoint.split("|");
+                      var buses_list = []
                       waypoint_list.forEach(function (place) {
                         var placename = store().auth.waypointnames_dict[place]
                         var place_coord = store().auth.waypointcoords_dict[place]
+                        store().auth.place_bus_map[place].forEach(function (bus) {
+                          if (bus in buses_list) {
+                            buses_list.push(bus)
+                          }
+                          else {
+
+                          }
+                        })
+                        buses_list = store().auth.place_bus_map[place]
                         var buses = store().auth.place_bus_map[place].join(", ")
                         var latlong = place_coord.split(",")
                         var latitude = parseFloat(latlong[0])
@@ -553,11 +644,11 @@ export const getSelectedAddress = (payload, current) => {
                           res.body.routes[0].legs.forEach(function (key) {
                             ETA = ETA + key.duration.value;
                           })
-                          console.log("ETA: ", ETA)
-                          console.log(res.body)
+                          //console.log("ETA: ", ETA)
+                          //console.log(res.body)
                           let lat = store().auth.selectedSourceAddress.selectedSource.latitude;
                           let long = store().auth.selectedSourceAddress.selectedSource.longitude;
-                          //console.log(lat);
+                          ////console.log(lat);
                           let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
                           let coords = points.map((point, index) => {
                             return {
@@ -568,7 +659,7 @@ export const getSelectedAddress = (payload, current) => {
                           dispatch({
                             type: "GET_BUS_ROUTE_COORDS",
                             payload: points,
-                            ETA: ETA/60 + 0.0
+                            ETA: ETA / 60 + 0.0
                           });
                         })
                       request.get("https://maps.googleapis.com/maps/api/directions/json")
@@ -579,10 +670,10 @@ export const getSelectedAddress = (payload, current) => {
                           key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
                         })
                         .finish((error, res) => {
-                          console.log(res.body)
+                          //console.log(res.body)
                           let lat = store().auth.selectedSourceAddress.selectedSource.latitude;
                           let long = store().auth.selectedSourceAddress.selectedSource.longitude;
-                          //console.log(lat);
+                          ////console.log(lat);
                           let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
                           let coords = points.map((point, index) => {
                             return {
@@ -603,10 +694,10 @@ export const getSelectedAddress = (payload, current) => {
                           key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
                         })
                         .finish((error, res) => {
-                          console.log(res.body)
+                          //console.log(res.body)
                           let lat = store().auth.selectedSourceAddress.selectedSource.latitude;
                           let long = store().auth.selectedSourceAddress.selectedSource.longitude;
-                          //console.log(lat);
+                          ////console.log(lat);
                           let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
                           let coords = points.map((point, index) => {
                             return {
@@ -618,6 +709,9 @@ export const getSelectedAddress = (payload, current) => {
                             type: "GET_ORIGIN_WALK_COORDS",
                             payload: points
                           });
+                          dispatch({
+                            type:"LOADING_MAP_COMPLETE"
+                          })
                         })
                     }, 2000)
                   }, 8000)
@@ -640,8 +734,8 @@ export const buildGraph = () => {
     for (var i = 0; i < vertices.length; i++) {
       g.addVertex(vertices[i]);
     }
-    console.log(vertices)
-    console.log(dict)
+    //console.log(vertices)
+    //console.log(dict)
     // adding edges
     Object.keys(dict).forEach(function (key, idx) {
       for (i = 0; i < dict[key].length; i++) {
@@ -731,12 +825,12 @@ class Graph {
       for (var j of get_values)
         //conc += j["vertex"] + " " + j["weight"];
         conc += j + " "
-      console.log(i + " -> " + conc);
+      //console.log(i + " -> " + conc);
     }
   }
   bfs(startingNode, endingNode) {
     // create a visited array
-    console.log("entered")
+    //console.log("entered")
     var visited = [];
     var prev = {}
     Object.keys(this.AdjList).forEach(function (i) {
@@ -753,7 +847,7 @@ class Graph {
     // loop until queue is element
     while (q.length !== 0) {
       // get the element from the queue
-      console.log(q.length)
+      //console.log(q.length)
       var getQueueElement = q.shift();
 
       // passing the current vertex to callback funtion
@@ -775,19 +869,19 @@ class Graph {
     }
 
     var waypoint = endingNode
-    console.log("Starting Path")
+    //console.log("Starting Path")
     previous = prev[endingNode]
     waypoint = waypoint + "|" + previous
     while (previous !== startingNode) {
-      console.log(previous)
+      //console.log(previous)
       previous = prev[previous]
       waypoint = waypoint + "|" + previous
     }
     if (previous === startingNode) {
-      console.log(startingNode)
+      //console.log(startingNode)
     }
-    console.log("Ending Path")
-    console.log("returning")
+    //console.log("Ending Path")
+    //console.log("returning")
     return waypoint;
   }
 
@@ -974,7 +1068,7 @@ const SetBusRouteForUser = (busname) => {
   return (dispatch, store) => {
     firebase.database().ref('/buses/' + busname).once("value")
       .then(function (snapshot) {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
         var startpoint = snapshot.child("Startpoint").val();
         var endpoint = snapshot.child("Endpoint").val();
         var waypoint = snapshot.child("Waypoint").val();
@@ -987,7 +1081,7 @@ const SetBusRouteForUser = (busname) => {
             key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
           })
           .finish((error, res) => {
-            console.log(res);
+            //console.log(res);
             let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
             let coords = points.map((point, index) => {
               return {
@@ -1009,7 +1103,7 @@ export const GetBusRoute = (busname) => {
   return (dispatch, store) => {
     firebase.database().ref('/buses/' + busname).once("value")
       .then(function (snapshot) {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
         var startpoint = snapshot.child("Startpoint").val();
         var endpoint = snapshot.child("Endpoint").val();
         var waypoint = snapshot.child("Waypoint").val();
@@ -1022,7 +1116,7 @@ export const GetBusRoute = (busname) => {
             key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
           })
           .finish((error, res) => {
-            console.log(res);
+            //console.log(res);
             let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
             let coords = points.map((point, index) => {
               return {
@@ -1045,7 +1139,7 @@ export const GetRickshawRoute = (rickshawname) => {
   return (dispatch, store) => {
     firebase.database().ref('/rickshaws/' + rickshawname).once("value")
       .then(function (snapshot) {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
         var startpoint = snapshot.child("Startpoint").val();
         var endpoint = snapshot.child("Endpoint").val();
         var waypoint = snapshot.child("Waypoint").val();
@@ -1058,7 +1152,7 @@ export const GetRickshawRoute = (rickshawname) => {
             key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
           })
           .finish((error, res) => {
-            console.log(res);
+            //console.log(res);
             let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
             let coords = points.map((point, index) => {
               return {
@@ -1171,10 +1265,10 @@ export const addBusEndPoint = (placeid) => {
 export const getcurrentbuscoords = () => {
   return (dispatch, store) => {
     var busname = store().auth.busname;
-    console.log(busname);
+    //console.log(busname);
     firebase.database().ref('/buses/' + busname).once("value")
       .then(function (snapshot) {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
         var startpoint = snapshot.child("Startpoint").val();
         var endpoint = snapshot.child("Endpoint").val();
         var waypoint = snapshot.child("Waypoint").val();
@@ -1187,7 +1281,7 @@ export const getcurrentbuscoords = () => {
             key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
           })
           .finish((error, res) => {
-            console.log(res);
+            //console.log(res);
             let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
             let coords = points.map((point, index) => {
               return {
@@ -1225,7 +1319,7 @@ export const addBusWayPoint = (placeid) => {
         else {
           firebase.database().ref('/buses/' + busname).once("value")
             .then(function (snapshot) {
-              console.log(snapshot.val());
+              //console.log(snapshot.val());
               var waypoint = snapshot.child("Waypoint").val();
               var places = snapshot.child("Places").val();
               var waypointlatlong = snapshot.child("Waypointlatlong").val();
@@ -1295,7 +1389,7 @@ export const resetAddRickshaw = () => {
 };
 
 export const AddNewRickshaw = (name) => {
-  console.log(name);
+  //console.log(name);
   let check = false;
   return (dispatch) => {
     if (name === "") {
@@ -1368,10 +1462,10 @@ export const addRickshawEndPoint = (placeid) => {
 export const getcurrentrickshawcoords = () => {
   return (dispatch, store) => {
     var rickshawname = store().auth.rickshawname;
-    console.log(rickshawname);
+    //console.log(rickshawname);
     firebase.database().ref('/rickshaws/' + rickshawname).once("value")
       .then(function (snapshot) {
-        console.log(snapshot.val());
+        //console.log(snapshot.val());
         var startpoint = snapshot.child("Startpoint").val();
         var endpoint = snapshot.child("Endpoint").val();
         var waypoint = snapshot.child("Waypoint").val();
@@ -1384,7 +1478,7 @@ export const getcurrentrickshawcoords = () => {
             key: "AIzaSyBW0I2DCKuHU5ZsbDJM9aIe2O4WM-9StqQ"
           })
           .finish((error, res) => {
-            console.log(res);
+            //console.log(res);
             let points = RNPolyline.decode(res.body.routes[0].overview_polyline.points);
             let coords = points.map((point, index) => {
               return {
@@ -1422,7 +1516,7 @@ export const addRickshawWayPoint = (placeid) => {
         else {
           firebase.database().ref('/rickshaws/' + rickshawname).once("value")
             .then(function (snapshot) {
-              console.log(snapshot.val());
+              //console.log(snapshot.val());
               var waypoint = snapshot.child("Waypoint").val();
               var places = snapshot.child("Places").val();
               var waypointlatlong = snapshot.child("Waypointlatlong").val();

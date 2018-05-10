@@ -8,9 +8,12 @@ import { Actions } from 'react-native-router-flux';
 
 class LoginForm extends Component {
 
+  constructor(props){
+    super(props)
+    this.props.logoutUser();
+  }
   componentWillMount() {
     this.props.getCurrentLocation();
-    this.props.logoutUser();
     this.props.getBusList();
     this.props.getRickshawList();
     this.props.buildBusMap();

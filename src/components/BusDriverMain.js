@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { BackHandler, ToastAndroid } from 'react-native';
 import { View, Form, Picker, Item, Icon, Text, Drawer, Container, Header, Left, Footer, Button, Body } from 'native-base';
 import MapView from 'react-native-maps';
 import RNGooglePlaces from 'react-native-google-places';
@@ -6,7 +7,7 @@ import request from '../util/request';
 import Polyline from '@mapbox/polyline';
 import RNPolyline from 'rn-maps-polyline'
 import { StyleSheet } from 'react-native';
-import SideBar from './SideBar';
+import BusSideBar from './SideBar/BusSideBar.js';
 import { connect } from 'react-redux';
 import firebase from 'firebase';
 import {
@@ -15,8 +16,12 @@ import {
 
 class BusDriverMain extends Component {
 
-
+  handleBackButton() {
+    ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+    return true;
+  }
   componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     this.props.getCurrentLocation();
     this.state.intervalid=setInterval(this.getlocation.bind(this), 5000);
   }
@@ -31,7 +36,10 @@ class BusDriverMain extends Component {
   }
 
   componentWillUnmount(){
+    let username = this.props.user;
+    firebase.database().ref('busdrivers/' + username).update({ latitude: 0, longitude: 0 });
     clearInterval(this.state.intervalid)
+    
   }
 
   success(pos) {
@@ -41,6 +49,7 @@ class BusDriverMain extends Component {
     let username = this.props.user;
     let latitude = pos.coords.latitude;
     let longitude = pos.coords.longitude;
+    ////console.log(username)
     if (this.props.user === this.state.user) {
       if (this.state.workmode) {
         firebase.database().ref('busdrivers/' + username).update({ latitude: latitude, longitude: longitude });
@@ -49,18 +58,13 @@ class BusDriverMain extends Component {
         firebase.database().ref('busdrivers/' + username).update({ latitude: 0, longitude: 0 });
       }
     }
-    else if (this.props.user === '') {
-      let olduser = this.state.user;
-      firebase.database().ref('busdrivers/' + olduser).update({ latitude: 0, longitude: 0 });
-    }
-
   }
   getlocation() {
     var options = {
       enableHighAccuracy: false, timeout: 5000, maximumAge: 0
     };
     function error(err) {
-      console.warn(`ERROR(${err.code}): ${err.message}`);
+      ////console.warn(`ERROR(${err.code}): ${err.message}`);
     }
     navigator.geolocation.getCurrentPosition(this.success.bind(this), error, options);
   }
@@ -109,7 +113,7 @@ class BusDriverMain extends Component {
     return (
       <Drawer
         ref={(ref) => { this.drawer = ref; }}
-        content={<SideBar navigator={this._navigator} />}
+        content={<BusSideBar navigator={this._navigator} />}
         onClose={() => closeDrawer()}
       >
 

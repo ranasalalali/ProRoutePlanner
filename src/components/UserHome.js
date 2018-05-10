@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Platform, StatusBar, BackHandler, ToastAndroid } from 'react-native';
-import { View, Footer, FooterTab, Container, Text, Button, Content, Header, Drawer, Left, Icon, Body } from 'native-base';
+import { Spinner, View, Footer, FooterTab, Container, Text, Button, Content, Header, Drawer, Left, Icon, Body } from 'native-base';
 import MapContainer from './MapContainer';
 import SideBar from './SideBar';
 import Fare from './Fare';
@@ -113,12 +113,12 @@ class UserHome extends Component {
               dest_walk_coords={this.props.dest_walk_coords}
               bus_stop_markers={this.props.bus_stop_markers}
               coords2={this.props.coords2}
+              loading_map={this.props.loading_map}
             />
           }
-
           {
             (this.props.taxifare && this.props.ETA && this.props.ETAG) &&
-            <Fare fare={this.props.taxifare} ETA={this.props.ETA} ETAG={this.props.ETAG} />
+            <Fare fare={this.props.taxifare} ETA={this.props.ETA} ETAG={this.props.ETAG} loading_map={this.props.loading_map} />
           }
 
 
@@ -129,8 +129,8 @@ class UserHome extends Component {
 }
 
 const mapStateToProps = ({ auth }) => {
-  const { ETA, ETAG, coords2, bus_stop_markers, origin_walk_coords, dest_walk_coords, bus_route_coords, liverickshawcoords, livetaxicoords, taxifare, livebuscoords, region, inputData, resultTypes, predictions, selectedSourceAddress, selectedDestinationAddress, coords } = auth;
-  return { ETA, ETAG, coords2, bus_stop_markers, origin_walk_coords, dest_walk_coords, bus_route_coords, liverickshawcoords, livetaxicoords, taxifare, livebuscoords, region, inputData, resultTypes, predictions, selectedSourceAddress, selectedDestinationAddress, coords };
+  const { loading_map, ETA, ETAG, coords2, bus_stop_markers, origin_walk_coords, dest_walk_coords, bus_route_coords, liverickshawcoords, livetaxicoords, taxifare, livebuscoords, region, inputData, resultTypes, predictions, selectedSourceAddress, selectedDestinationAddress, coords } = auth;
+  return { loading_map, ETA, ETAG, coords2, bus_stop_markers, origin_walk_coords, dest_walk_coords, bus_route_coords, liverickshawcoords, livetaxicoords, taxifare, livebuscoords, region, inputData, resultTypes, predictions, selectedSourceAddress, selectedDestinationAddress, coords };
 };
 
 

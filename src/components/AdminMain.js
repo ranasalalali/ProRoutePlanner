@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { Platform, StatusBar } from 'react-native';
+import { BackHandler, Platform, StatusBar, ToastAndroid } from 'react-native';
 import { View, Footer, FooterTab, Container, Text, Button, Content, Right, List, ListItem, Header, Drawer, Left, Icon, Body } from 'native-base';
 import MapContainer from './MapContainer';
 import AdminSideBar from './SideBar/AdminSideBar.js';
@@ -9,8 +9,13 @@ import { connect } from 'react-redux';
 import { resetAddBus, getBusList, BusInput, getcurrentbuscoords } from '../actions';
 class AdminMain extends Component {
 
-
-
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+  handleBackButton() {
+    ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+    return true;
+  }
   render() {
     closeDrawer = () => {
       this.drawer._root.close()

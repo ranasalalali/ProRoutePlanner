@@ -36,7 +36,6 @@ export default class AdminSideBar extends Component {
 							</Right>
 						</ListItem>
 						<ListItem onPress={() => {
-							Actions.pop()
 							Actions.busroutes()
 						}}>
 							<Left>
@@ -50,7 +49,6 @@ export default class AdminSideBar extends Component {
 							</Right>
 						</ListItem>
 						<ListItem onPress={() => {
-							Actions.pop()
 							Actions.rickshawroutes()
 						}}>
 							<Left>
@@ -66,7 +64,6 @@ export default class AdminSideBar extends Component {
 						<ListItem onPress={() => {
 							Actions.pop()
 							Actions.login()
-
 						}}>
 							<Left>
 								<Icon style={{ color: 'red' }} name='power' />

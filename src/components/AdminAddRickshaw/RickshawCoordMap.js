@@ -35,7 +35,7 @@ class RickshawCoordMap extends Component {
       Alert.alert('Choose a Location');
     }
     else {
-      console.log(this.state.place);
+      //console.log(this.state.place);
       this.props.addRickshawWayPoint(this.state.place);
       this.props.getRickshawWaypointList();
     }

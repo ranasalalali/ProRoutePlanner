@@ -73,7 +73,7 @@ class RegisterTaxiDriver extends Component {
       let password = this.state.password;
       let license = this.state.license;
       let phone = this.state.phone;
-      console.log(this.state.email);
+      //console.log(this.state.email);
       firebase.database().ref('busdrivers/')
         .once('value', function (snapshot) {
           if (!snapshot.hasChild(username)) {

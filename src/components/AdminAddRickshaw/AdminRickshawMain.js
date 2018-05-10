@@ -62,8 +62,10 @@ class AdminRickshawMain extends Component {
         <Container>
           <Header style={{ backgroundColor: 'black' }} androidStatusBarColor='black'>
             <Left>
-              <Button transparent onPress={() => openDrawer()}>
-                <Icon name='menu' />
+              <Button transparent onPress={() => {
+                Actions.adminmain()
+              }}>
+                <Icon name='arrow-back' />
               </Button>
             </Left>
             <Body>

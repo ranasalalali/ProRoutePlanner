@@ -53,31 +53,26 @@ class AdminBusesMain extends Component {
       this.drawer._root.open()
     };
     return (
-      <Drawer
-        ref={(ref) => { this.drawer = ref; }}
-        content={<SideBar navigator={this._navigator} />}
-        onClose={() => closeDrawer()}
-      >
-
-        <Container>
-          <Header style={{ backgroundColor: 'black' }} androidStatusBarColor='black'>
-            <Left>
-              <Button transparent onPress={() => openDrawer()}>
-                <Icon name='menu' />
-              </Button>
-            </Left>
-            <Body>
-              <Text style={{ color: 'white' }}>Buses List</Text>
-            </Body>
-            <Right>
-              <Button transparent onPress={() => AddBus()}>
-                <Icon name='add' />
-              </Button>
-            </Right>
-          </Header>
-          {this.BusesList()}
-        </Container>
-      </Drawer>
+      <Container>
+        <Header style={{ backgroundColor: 'black' }} androidStatusBarColor='black'>
+          <Left>
+            <Button transparent onPress={() => {
+              Actions.adminmain()
+            }}>
+              <Icon name='arrow-back' />
+            </Button>
+          </Left>
+          <Body>
+            <Text style={{ color: 'white' }}>Buses List</Text>
+          </Body>
+          <Right>
+            <Button transparent onPress={() => AddBus()}>
+              <Icon name='add' />
+            </Button>
+          </Right>
+        </Header>
+        {this.BusesList()}
+      </Container>
     );
   }
 }

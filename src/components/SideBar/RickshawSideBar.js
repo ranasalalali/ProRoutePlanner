@@ -36,7 +36,6 @@ export default class RickshawSideBar extends Component {
 							</Right>
 						</ListItem>
 						<ListItem onPress={() => {
-							Actions.pop()
 							Actions.rickshawroutes()
 						}}>
 							<Left>

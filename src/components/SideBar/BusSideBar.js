@@ -36,7 +36,6 @@ export default class BusSideBar extends Component {
 							</Right>
 						</ListItem>
 						<ListItem onPress={() => {
-							Actions.pop()
 							Actions.busroutes()
 						}}>
 							<Left>

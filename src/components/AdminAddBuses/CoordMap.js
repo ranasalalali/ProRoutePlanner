@@ -35,7 +35,7 @@ class CoordMap extends Component {
       Alert.alert('Choose a Location');
     }
     else {
-      console.log(this.state.place);
+      //console.log(this.state.place);
       this.props.addBusWayPoint(this.state.place);
       this.props.getWaypointList();
     }

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { BackHandler, ToastAndroid } from 'react-native';
 import { View, Form, Picker, Item, Icon, Text, Drawer, Container, Header, Left, Footer, Button, Body } from 'native-base';
 import MapView from 'react-native-maps';
 import RNGooglePlaces from 'react-native-google-places';
@@ -6,7 +7,7 @@ import request from '../util/request';
 import Polyline from '@mapbox/polyline';
 import RNPolyline from 'rn-maps-polyline'
 import { StyleSheet } from 'react-native';
-import SideBar from './SideBar';
+import TaxiSideBar from './SideBar/TaxiSideBar.js';
 import { connect } from 'react-redux';
 import firebase from 'firebase';
 import {
@@ -26,12 +27,19 @@ class TaxiDriverMain extends Component {
       user: this.props.user
     };
   }
+  handleBackButton() {
+    ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+    return true;
+  }
   componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     this.state.intervalid = setInterval(() => {
       this.getlocation()
     }, 5000)
   }
   componentWillUnmount(){
+    let username = this.props.user;
+    firebase.database().ref('taxidrivers/' + username).update({ latitude: 0, longitude: 0 });
     clearInterval(this.state.intervalid)
   }
 
@@ -53,10 +61,6 @@ class TaxiDriverMain extends Component {
         firebase.database().ref('taxidrivers/' + username).update({ latitude: 0, longitude: 0 });
       }
     }
-    else if (this.props.user === '') {
-      let olduser = this.state.user;
-      firebase.database().ref('taxidrivers/' + olduser).update({ latitude: 0, longitude: 0 });
-    }
 
   }
   getlocation() {
@@ -64,7 +68,7 @@ class TaxiDriverMain extends Component {
       enableHighAccuracy: false, timeout: 5000, maximumAge: 0
     };
     function error(err) {
-      console.warn(`ERROR(${err.code}): ${err.message}`);
+      //console.warn(`ERROR(${err.code}): ${err.message}`);
     }
     navigator.geolocation.getCurrentPosition(this.success.bind(this), error, options);
   }
@@ -115,7 +119,7 @@ class TaxiDriverMain extends Component {
       <Drawer
 
         ref={(ref) => { this.drawer = ref; }}
-        content={<SideBar clear={clear} navigator={this._navigator} />}
+        content={<TaxiSideBar clear={clear} navigator={this._navigator} />}
         onClose={() => closeDrawer()}
       >
 

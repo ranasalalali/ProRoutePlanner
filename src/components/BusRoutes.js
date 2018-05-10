@@ -8,6 +8,7 @@ import RNPolyline from 'rn-maps-polyline'
 import { StyleSheet } from 'react-native';
 import SideBar from './SideBar';
 import { connect } from 'react-redux';
+import { Actions } from 'react-native-router-flux';
 import {
   GetBusRoute, getBusList
 } from '../actions';
@@ -31,9 +32,9 @@ class BusRoutes extends Component {
   }
   updateDropdown() {
     var items = this.props.buslist;
-    console.log(items);
+    ////console.log(items);
     const all_items = items.map((category, i) => {
-      console.log(category)
+      //console.log(category)
       return (
         <Picker.Item key={category} label={category} value={category} />
       )
@@ -50,59 +51,54 @@ class BusRoutes extends Component {
       this.drawer._root.open()
     };
     return (
-      <Drawer
-        ref={(ref) => { this.drawer = ref; }}
-        content={<SideBar navigator={this._navigator} />}
-        onClose={() => closeDrawer()}
-      >
+      <Container>
+        <View>
+          <Header style={{ backgroundColor: 'black' }} androidStatusBarColor='black'>
+            <Left>
+              <Button transparent onPress={() => {
+                Actions.pop()
+              }}>
+                <Icon name='arrow-back' />
+              </Button>
+            </Left>
+            <Body>
+              <Text style={{ color: 'white' }}>Bus Routes</Text>
+            </Body>
 
-        <Container>
-          <View>
-            <Header style={{ backgroundColor: 'black' }} androidStatusBarColor='black'>
-              <Left>
-                <Button transparent onPress={() => openDrawer()}>
-                  <Icon name='menu' />
-                </Button>
-              </Left>
-              <Body>
-                <Text style={{ color: 'white' }}>Bus Routes</Text>
-              </Body>
-
-            </Header>
-          </View>
-          <Form>
-            <Picker
-              mode="dropdown"
-              placeholder="Select One"
-              selectedValue={this.state.selected2}
-              onValueChange={this.onValueChange2.bind(this)}
-            >
-              {this.updateDropdown()}
-            </Picker>
-          </Form>
-          <View style={styles.container}>
-            <MapView
-              provider={MapView.PROVIDER_GOOGLE}
-              style={styles.map}
-              showsUserLocation={true}
-              showsMyLocationButton={true}
-              initialRegion={{
-                latitude: 24.8615,
-                longitude: 67.0099,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              }}
-            >
-              <MapView.Polyline
-                lineCap="round"
-                lineJoin="round"
-                coordinates={this.props.muslimCoords}
-                strokeColor="blue"
-                strokeWidth={3} />
-            </MapView>
-          </View>
-        </Container>
-      </Drawer>
+          </Header>
+        </View>
+        <Form>
+          <Picker
+            mode="dropdown"
+            placeholder="Select One"
+            selectedValue={this.state.selected2}
+            onValueChange={this.onValueChange2.bind(this)}
+          >
+            {this.updateDropdown()}
+          </Picker>
+        </Form>
+        <View style={styles.container}>
+          <MapView
+            provider={MapView.PROVIDER_GOOGLE}
+            style={styles.map}
+            showsUserLocation={true}
+            showsMyLocationButton={true}
+            initialRegion={{
+              latitude: 24.8615,
+              longitude: 67.0099,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          >
+            <MapView.Polyline
+              lineCap="round"
+              lineJoin="round"
+              coordinates={this.props.muslimCoords}
+              strokeColor="blue"
+              strokeWidth={3} />
+          </MapView>
+        </View>
+      </Container>
     );
   }
 }
